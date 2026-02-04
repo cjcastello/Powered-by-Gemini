@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -18,6 +18,10 @@
         .tool-icon-bg { transition: all 0.3s ease; }
         .card-hover:hover .tool-icon-bg { transform: scale(1.1) rotate(5deg); }
         .icon-img-fit { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+        
+        /* NUEVO: Estilos para el video embebido */
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 12px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
@@ -123,7 +127,7 @@
                     </div>
                     <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Título</label><input type="text" id="input-title" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></div>
                     <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Descripción</label><textarea id="input-desc" rows="4" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></textarea></div>
-                    <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Enlace (Opcional)</label><div class="relative"><i class="fa-solid fa-link absolute left-4 top-3.5 text-slate-400 text-sm"></i><input type="url" id="input-link" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></div></div>
+                    <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Enlace a Recurso (Video YouTube, Drive, PDF...)</label><div class="relative"><i class="fa-solid fa-link absolute left-4 top-3.5 text-slate-400 text-sm"></i><input type="url" id="input-link" placeholder="Ej: https://youtube.com/..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></div></div>
                     <div class="pt-4 flex gap-3">
                         <button type="button" onclick="router('dashboard')" class="flex-1 px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50">Cancelar</button>
                         <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-orange-600 text-white font-medium hover:bg-orange-700 shadow-lg shadow-orange-200 transition-all transform active:scale-95">Guardar</button>
@@ -154,20 +158,19 @@
         // ==========================================
         
         const APP_CONFIG = {
-            appName: "Powered by Gemini", // Cambiado el nombre
+            appName: "Powered by Gemini", // Tu nombre personalizado
             pageTitle: "Formación Fritta",
             navSubtitle: "Plan semanal",
             
-            // IMPORTANTE: Pon aquí el nombre de tu archivo de imagen
-            // Ejemplo: "fritta_logo.png" (asegurate de la extensión)
+            // Tu logo
             logoIcon: "iconoFRITTA_COLOR_sRGB.jpg", 
             
-            // Colores de las herramientas (Aquí defines colores específicos)
+            // Colores de las herramientas
             tools: {
                 'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'bg-gradient-to-br from-blue-500 to-purple-500', text: 'text-blue-600' },
                 'Google Docs':     { icon: 'fa-solid fa-file-word', color: 'bg-blue-500', text: 'text-blue-600' },
                 'Google Sheets':   { icon: 'fa-solid fa-file-excel', color: 'bg-green-500', text: 'text-green-600' },
-                'Google Slides':   { icon: 'fa-solid fa-file-powerpoint', color: 'bg-orange-500', text: 'text-orange-600' }, // Slides pega con naranja
+                'Google Slides':   { icon: 'fa-solid fa-file-powerpoint', color: 'bg-orange-500', text: 'text-orange-600' },
                 'Gmail':           { icon: 'fa-solid fa-envelope', color: 'bg-red-500', text: 'text-red-600' },
                 'Google Meet':     { icon: 'fa-solid fa-video', color: 'bg-teal-500', text: 'text-teal-600' },
                 'Drive':           { icon: 'fa-brands fa-google-drive', color: 'bg-slate-500', text: 'text-slate-600' },
@@ -188,10 +191,44 @@
             return `<i class="${iconString} ${extraClasses}"></i>`;
         }
 
+        // --- NUEVO: FUNCIÓN MÁGICA PARA VIDEOS Y RECURSOS ---
+        function getMediaEmbed(link) {
+            if (!link) return '';
+            
+            // Detectar YouTube
+            const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const ytMatch = link.match(youtubeRegex);
+            
+            if (ytMatch && ytMatch[1]) {
+                return `
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>`;
+            }
+            
+            // Detectar Imagen directa
+            if (link.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+                return `<div class="mt-4 rounded-xl overflow-hidden border border-slate-100"><img src="${link}" class="w-full h-48 object-cover" alt="Recurso visual"></div>`;
+            }
+
+            // Enlace Genérico (Drive, PDF, Docs) con botón bonito
+            let icon = 'fa-external-link-alt';
+            let text = 'Ver Recurso';
+            if(link.includes('drive.google.com')) { icon = 'fa-brands fa-google-drive'; text = 'Abrir Google Drive'; }
+            if(link.includes('docs.google.com')) { icon = 'fa-file-lines'; text = 'Abrir Documento'; }
+            
+            return `
+                <a href="${link}" target="_blank" class="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border-2 border-slate-100 text-slate-600 font-medium hover:border-orange-500 hover:text-orange-600 transition-all group">
+                    <i class="fa-solid ${icon} group-hover:scale-110 transition-transform"></i> ${text}
+                </a>
+            `;
+        }
+        // --------------------------------------------------------
+
         function applyBranding() {
             document.title = APP_CONFIG.pageTitle;
             const sidebarTitle = document.getElementById('app-title-sidebar');
-            sidebarTitle.innerHTML = `<span class="text-slate-800">${APP_CONFIG.appName}</span>`; // Todo oscuro para contrastar con logo naranja
+            sidebarTitle.innerHTML = `<span class="text-slate-800">${APP_CONFIG.appName}</span>`;
             document.getElementById('logo-icon-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
             document.getElementById('mobile-logo-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
             document.getElementById('app-title-mobile').innerText = APP_CONFIG.appName;
@@ -234,10 +271,13 @@
             const style = getToolStyle(lesson.tool);
             const weekFormatted = lesson.week.replace('W', ' Sem ');
             const iconHtml = renderIcon(style.icon);
+            // AQUÍ ES DONDE SE GENERA EL VIDEO O EL BOTÓN
+            const mediaHtml = getMediaEmbed(lesson.link);
+
             return `
-                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-shadow card-hover group relative overflow-hidden">
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-shadow card-hover group relative overflow-hidden flex flex-col h-full">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-50 to-slate-100 rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform"></div>
-                    <div class="relative z-10">
+                    <div class="relative z-10 flex-1">
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-lg ${style.color} text-white flex items-center justify-center shadow-md shadow-slate-200 tool-icon-bg overflow-hidden">${iconHtml}</div>
@@ -246,8 +286,10 @@
                             ${!isCompact ? `<button onclick="promptDelete('${lesson.id}')" class="text-slate-300 hover:text-red-500 transition-colors p-1"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                         </div>
                         <h3 class="text-lg font-bold text-slate-800 mb-2 leading-tight">${lesson.title}</h3>
-                        <p class="text-sm text-slate-500 line-clamp-2 mb-4 h-10">${lesson.desc}</p>
-                        ${lesson.link ? `<a href="${lesson.link}" target="_blank" class="inline-flex items-center gap-2 text-sm font-medium text-orange-600 hover:text-orange-700 bg-orange-50 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors"><i class="fa-solid fa-external-link-alt text-xs"></i> Ver recurso</a>` : ''}
+                        <p class="text-sm text-slate-500 line-clamp-2 mb-2">${lesson.desc}</p>
+                        
+                        <!-- Mostramos el video/recurso aquí -->
+                        ${mediaHtml}
                     </div>
                 </div>`;
         }
@@ -276,5 +318,3 @@
     </script>
 </body>
 </html>
-
-
