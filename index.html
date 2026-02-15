@@ -8,122 +8,189 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; }
+        
+        /* Animaciones sutiles */
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .tool-icon-bg { transition: all 0.3s ease; }
-        .card-hover:hover .tool-icon-bg { transform: scale(1.1) rotate(5deg); }
+        
+        /* Scrollbar refinado */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
         .icon-img-fit { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
         
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 12px; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin-top: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* Estilo para lecciones bloqueadas */
-        .lesson-locked { filter: grayscale(1); opacity: 0.8; pointer-events: none; user-select: none; }
-        .lock-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; z-index: 20; backdrop-filter: blur(2px); border-radius: 1rem; }
+        /* Estilo para lecciones bloqueadas: Más profesional, menos "gris" */
+        .lesson-locked { opacity: 0.7; pointer-events: none; user-select: none; background-color: #F9FAFB; }
+        .lesson-locked .tool-icon-bg { filter: grayscale(1); }
+        
+        /* Sidebar Link Activo */
+        .nav-active { background-color: #EA580C; color: white; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3); }
+        .nav-inactive:hover { background-color: rgba(255,255,255,0.05); color: white; }
+
+        /* Badges */
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 9999px; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
+<body class="bg-gray-100 text-slate-800 h-screen flex overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex shadow-sm z-10">
-        <div class="p-6 flex items-center gap-3 border-b border-slate-100">
-            <div id="logo-icon-container" class="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden"></div>
-            <h1 class="font-bold text-lg tracking-tight text-slate-700" id="app-title-sidebar"></h1>
+    <!-- Sidebar Enterprise (Oscuro) -->
+    <aside class="w-72 bg-slate-900 text-slate-300 flex flex-col hidden md:flex shadow-xl z-20">
+        <div class="p-6 flex items-center gap-4 border-b border-slate-800">
+            <div id="logo-icon-container" class="w-10 h-10 rounded-lg bg-white p-1 flex items-center justify-center overflow-hidden shadow-sm"></div>
+            <div>
+                <h1 class="font-bold text-base text-white tracking-tight leading-tight" id="app-title-sidebar"></h1>
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold mt-0.5">Learning Hub</p>
+            </div>
         </div>
 
-        <nav class="flex-1 p-4 space-y-1">
-            <button onclick="router('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-orange-600 bg-orange-50 transition-colors">
-                <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Menu Principal</p>
+            <button onclick="router('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200">
+                <i class="fa-solid fa-chart-pie w-4 text-center"></i> Dashboard
             </button>
-            <button onclick="router('lessons')" id="nav-lessons" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
-                <i class="fa-solid fa-book-open w-5"></i> Lecciones
+            <button onclick="router('lessons')" id="nav-lessons" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200">
+                <i class="fa-solid fa-graduation-cap w-4 text-center"></i> Mis Cursos
             </button>
-            <!-- Botón Añadir oculto para los usuarios normales -->
-            <button onclick="router('add')" id="nav-add" class="hidden nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
-                <i class="fa-solid fa-plus-circle w-5"></i> Añadir (Admin)
-            </button>
+            
+            <!-- Separador -->
+            <div class="pt-4 mt-2 border-t border-slate-800">
+                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Administración</p>
+                <button onclick="router('add')" id="nav-add" class="hidden nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:text-white">
+                    <i class="fa-solid fa-plus-circle w-4 text-center"></i> Añadir Contenido
+                </button>
+                <div class="px-4 py-2">
+                    <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                        <div class="flex justify-between items-end mb-2">
+                            <span class="text-xs font-medium text-slate-400">Progreso General</span>
+                            <span class="text-xs font-bold text-orange-500" id="progress-text-sidebar">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-1.5">
+                            <div class="bg-orange-500 rounded-full h-1.5 transition-all duration-500" style="width: 0%" id="progress-bar-sidebar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </nav>
 
-        <div class="p-4 border-t border-slate-100">
-            <div class="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-4 text-white">
-                <h3 class="text-sm font-semibold mb-1">Estado del Plan</h3>
-                <p class="text-xs opacity-90 mb-3" id="status-text">Progreso del curso</p>
-                <div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
-                    <div class="bg-white rounded-full h-1.5" style="width: 0%" id="progress-bar-sidebar"></div>
+        <div class="p-4 border-t border-slate-800">
+            <div class="flex items-center gap-3 px-2">
+                <div class="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white text-xs font-bold">JD</div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-medium text-white truncate">Usuario</p>
+                    <p class="text-xs text-slate-500 truncate">Estudiante</p>
                 </div>
-                <p class="text-xs text-right opacity-90" id="progress-text-sidebar">0% desbloqueado</p>
             </div>
         </div>
     </aside>
 
     <!-- Contenido Principal -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <header class="md:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div id="mobile-logo-container" class="w-8 h-8 flex items-center justify-center overflow-hidden"></div>
-                <span class="font-bold text-slate-700" id="app-title-mobile">App</span>
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-gray-50">
+        <!-- Header Móvil -->
+        <header class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center text-white">
+            <div class="flex items-center gap-3">
+                <div id="mobile-logo-container" class="w-8 h-8 bg-white rounded-md p-0.5 flex items-center justify-center overflow-hidden"></div>
+                <span class="font-bold text-sm" id="app-title-mobile">App</span>
             </div>
-            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-slate-600">
+            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-slate-400 hover:text-white">
                 <i class="fa-solid fa-bars text-xl"></i>
             </button>
         </header>
 
-        <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-white shadow-lg border-b border-slate-200 z-20 md:hidden">
+        <!-- Menú Móvil Overlay -->
+        <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-slate-800 shadow-2xl border-b border-slate-700 z-50 md:hidden">
             <nav class="p-4 space-y-2">
-                <button onclick="router('dashboard'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg hover:bg-slate-50">Dashboard</button>
-                <button onclick="router('lessons'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg hover:bg-slate-50">Lecciones</button>
+                <button onclick="router('dashboard'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white">Dashboard</button>
+                <button onclick="router('lessons'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white">Mis Cursos</button>
             </nav>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 md:p-8 relative" id="main-container">
+        <div class="flex-1 overflow-y-auto p-6 md:p-10 relative" id="main-container">
             <!-- VISTA: DASHBOARD -->
-            <section id="view-dashboard" class="fade-in max-w-5xl mx-auto w-full">
-                <div class="mb-8">
-                    <h2 class="text-2xl font-bold text-slate-800">Panel General</h2>
-                    <p class="text-slate-500" id="dashboard-subtitle">Resumen.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm text-slate-500 font-medium">Total Sesiones</p><h3 class="text-3xl font-bold text-slate-800" id="stat-total">0</h3></div>
-                            <div class="p-2 bg-slate-100 text-slate-600 rounded-lg"><i class="fa-solid fa-layer-group"></i></div>
-                        </div>
+            <section id="view-dashboard" class="fade-in max-w-7xl mx-auto w-full">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-6 border-b border-gray-200">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Panel de Control</h2>
+                        <p class="text-slate-500 mt-1" id="dashboard-subtitle">Bienvenido a tu centro de formación.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm text-slate-500 font-medium">Disponibles</p><h3 class="text-3xl font-bold text-slate-800" id="stat-active">0</h3></div>
-                            <div class="p-2 bg-orange-50 text-orange-600 rounded-lg"><i class="fa-solid fa-unlock"></i></div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm text-slate-500 font-medium">Bloqueadas</p><h3 class="text-xl font-bold text-slate-800 truncate" id="stat-locked">0</h3></div>
-                            <div class="p-2 bg-slate-100 text-slate-400 rounded-lg"><i class="fa-solid fa-lock"></i></div>
-                        </div>
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm text-slate-400">Fecha actual</p>
+                        <p class="text-sm font-medium text-slate-700" id="current-date">--</p>
                     </div>
                 </div>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-slate-700">Tu Ruta de Aprendizaje</h3>
-                    <button onclick="router('lessons')" class="text-sm text-orange-600 font-medium hover:underline">Ver todo el plan</button>
+
+                <!-- Stats Row -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Sesiones</p>
+                            <h3 class="text-3xl font-bold text-slate-800" id="stat-total">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl"><i class="fa-solid fa-layer-group"></i></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Desbloqueadas</p>
+                            <h3 class="text-3xl font-bold text-slate-800" id="stat-active">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-xl"><i class="fa-solid fa-unlock"></i></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Próximas</p>
+                            <h3 class="text-3xl font-bold text-slate-800" id="stat-locked">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center text-xl"><i class="fa-solid fa-lock"></i></div>
+                    </div>
                 </div>
-                <div id="dashboard-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-slate-800">Ruta de Aprendizaje</h3>
+                    <button onclick="router('lessons')" class="text-sm font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1 transition-colors">
+                        Ver plan completo <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                
+                <div id="dashboard-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
             </section>
 
             <!-- VISTA: LECCIONES -->
-            <section id="view-lessons" class="hidden fade-in max-w-6xl mx-auto w-full">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div><h2 class="text-2xl font-bold text-slate-800">Plan de Formación</h2><p class="text-slate-500">Sesiones semanales.</p></div>
-                    <div class="flex gap-2">
-                        <div class="relative"><i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-xs"></i><input type="text" id="search-input" onkeyup="filterLessons()" placeholder="Buscar..." class="pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-orange-500 w-full md:w-64"></div>
-                        <select id="filter-tool" onchange="filterLessons()" class="px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-orange-500 bg-white"><option value="all">Todas</option></select>
+            <section id="view-lessons" class="hidden fade-in max-w-7xl mx-auto w-full">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-200">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Mis Cursos</h2>
+                        <p class="text-slate-500 mt-1">Explora las sesiones formativas disponibles.</p>
+                    </div>
+                    <div class="flex gap-3 bg-white p-1 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="relative">
+                            <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
+                            <input type="text" id="search-input" onkeyup="filterLessons()" placeholder="Buscar lección..." class="pl-9 pr-4 py-2 bg-transparent text-sm focus:outline-none w-full md:w-56 text-slate-700">
+                        </div>
+                        <div class="w-px bg-gray-200 my-1"></div>
+                        <select id="filter-tool" onchange="filterLessons()" class="px-3 py-2 bg-transparent text-sm focus:outline-none text-slate-600 font-medium cursor-pointer hover:text-orange-600">
+                            <option value="all">Todas las Herramientas</option>
+                        </select>
                     </div>
                 </div>
                 <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </section>
+            
+            <!-- VISTA: AÑADIR (Solo Admin) -->
+            <section id="view-add" class="hidden fade-in max-w-2xl mx-auto w-full">
+                 <!-- (Mismo formulario, simplificado visualmente si se requiere, pero mantenemos funcionalidad) -->
+                <div class="mb-6">
+                    <button onclick="router('dashboard')" class="text-slate-400 hover:text-slate-600 mb-2 flex items-center gap-2 text-sm"><i class="fa-solid fa-arrow-left"></i> Cancelar</button>
+                    <h2 class="text-2xl font-bold text-slate-900">Configurar Nueva Sesión</h2>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 text-center">
+                    <i class="fa-solid fa-code text-4xl text-slate-300 mb-4"></i>
+                    <p class="text-slate-600">Para añadir lecciones permanentes, edita la sección <code>PLAN_DE_ESTUDIOS</code> en el código fuente.</p>
+                </div>
             </section>
         </div>
     </main>
@@ -139,22 +206,22 @@
             navSubtitle: "Plan Semanal",
             logoIcon: "iconoFRITTA_COLOR_sRGB.jpg", 
             
+            // Colores más profesionales (Enterprise Palette)
             tools: {
-                'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'bg-gradient-to-br from-blue-500 to-purple-500', text: 'text-blue-600' },
-                'Google Docs':     { icon: 'fa-solid fa-file-word', color: 'bg-blue-500', text: 'text-blue-600' },
-                'Google Sheets':   { icon: 'fa-solid fa-file-excel', color: 'bg-green-500', text: 'text-green-600' },
-                'Google Slides':   { icon: 'fa-solid fa-file-powerpoint', color: 'bg-orange-500', text: 'text-orange-600' },
-                'Gmail':           { icon: 'fa-solid fa-envelope', color: 'bg-red-500', text: 'text-red-600' },
-                'Google Meet':     { icon: 'fa-solid fa-video', color: 'bg-teal-500', text: 'text-teal-600' },
-                'Drive':           { icon: 'fa-brands fa-google-drive', color: 'bg-slate-500', text: 'text-slate-600' },
+                'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'text-blue-600 bg-blue-50 border-blue-600' },
+                'Google Docs':     { icon: 'fa-solid fa-file-word', color: 'text-blue-700 bg-blue-50 border-blue-700' },
+                'Google Sheets':   { icon: 'fa-solid fa-file-excel', color: 'text-green-700 bg-green-50 border-green-700' },
+                'Google Slides':   { icon: 'fa-solid fa-file-powerpoint', color: 'text-orange-600 bg-orange-50 border-orange-600' },
+                'Gmail':           { icon: 'fa-solid fa-envelope', color: 'text-red-600 bg-red-50 border-red-600' },
+                'Google Meet':     { icon: 'fa-solid fa-video', color: 'text-teal-600 bg-teal-50 border-teal-600' },
+                'Drive':           { icon: 'fa-brands fa-google-drive', color: 'text-slate-600 bg-slate-100 border-slate-600' },
             },
-            defaultTool: { icon: 'fa-solid fa-cube', color: 'bg-slate-400', text: 'text-slate-600' }
+            defaultTool: { icon: 'fa-solid fa-cube', color: 'text-slate-600 bg-slate-50 border-slate-400' }
         };
 
         // ==========================================
-        //  🎓 PLAN DE ESTUDIOS (EDITA AQUÍ CADA SEMANA)
+        //  PLAN DE ESTUDIOS (BASE DE DATOS)
         // ==========================================
-        // Cambia 'activa: false' a 'activa: true' para desbloquear una lección.
         
         const PLAN_DE_ESTUDIOS = [
             {
@@ -163,8 +230,9 @@
                 tool: 'Gemini Advanced',
                 title: 'Introducción a la IA Generativa',
                 desc: 'Conceptos básicos, cómo entrar a Gemini y primeros pasos con el chat.',
-                link: 'https://www.youtube.com/watch?v=VIDEO_ID_AQUI', // Pon aquí tu enlace
-                activa: true // <--- ESTA YA ESTÁ VISIBLE
+                link: 'https://www.youtube.com/watch?v=VIDEO_ID_AQUI',
+                activa: true,
+                type: 'Video' // Nuevo campo para badge
             },
             {
                 id: 's2',
@@ -173,7 +241,8 @@
                 title: 'Redacción de Correos Inteligente',
                 desc: 'Cómo usar Gemini para responder emails y redactar borradores rápidamente.',
                 link: '', 
-                activa: false // <--- BLOQUEADA (Candado)
+                activa: false,
+                type: 'Práctica'
             },
             {
                 id: 's3',
@@ -182,7 +251,8 @@
                 title: 'Creación de Documentos',
                 desc: 'Generar ideas, estructuras y resumir textos largos en segundos.',
                 link: '',
-                activa: false // <--- BLOQUEADA
+                activa: false,
+                type: 'Taller'
             },
             {
                 id: 's4',
@@ -191,7 +261,8 @@
                 title: 'Análisis de Datos y Fórmulas',
                 desc: 'Organiza información y crea fórmulas complejas solo pidiéndolo.',
                 link: '',
-                activa: false 
+                activa: false,
+                type: 'Técnico'
             },
             {
                 id: 's5',
@@ -200,7 +271,8 @@
                 title: 'Presentaciones Impactantes',
                 desc: 'Generación de imágenes y estructuras para diapositivas.',
                 link: '',
-                activa: false 
+                activa: false,
+                type: 'Creativo'
             },
             {
                 id: 's6',
@@ -209,7 +281,8 @@
                 title: 'Reuniones Eficientes',
                 desc: 'Fondos generados por IA y mejora de imagen y sonido.',
                 link: '',
-                activa: false 
+                activa: false,
+                type: 'Video'
             },
             {
                 id: 's7',
@@ -218,17 +291,24 @@
                 title: 'Trucos Avanzados y Prompts',
                 desc: 'Cómo pedir las cosas para obtener los mejores resultados posibles.',
                 link: '',
-                activa: false 
+                activa: false,
+                type: 'Masterclass'
             }
         ];
 
         // ==========================================
-        //  FIN DE EDICIÓN
+        //  LÓGICA
         // ==========================================
 
         let lessons = [];
 
-        document.addEventListener('DOMContentLoaded', () => { applyBranding(); populateToolSelectors(); loadData(); router('dashboard'); });
+        document.addEventListener('DOMContentLoaded', () => { 
+            applyBranding(); 
+            populateToolSelectors(); 
+            loadData(); 
+            router('dashboard');
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        });
         
         function renderIcon(iconString, extraClasses = '') {
             const isImage = iconString.includes('.') || iconString.includes('/') || iconString.startsWith('http');
@@ -245,22 +325,21 @@
                 return `<div class="video-container"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
             }
             if (link.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
-                return `<div class="mt-4 rounded-xl overflow-hidden border border-slate-100"><img src="${link}" class="w-full h-48 object-cover" alt="Recurso visual"></div>`;
+                return `<div class="mt-4 rounded-lg overflow-hidden border border-slate-200"><img src="${link}" class="w-full h-48 object-cover" alt="Recurso visual"></div>`;
             }
-            let icon = 'fa-external-link-alt'; let text = 'Ver Recurso';
-            if(link.includes('drive.google.com')) { icon = 'fa-brands fa-google-drive'; text = 'Abrir Google Drive'; }
-            if(link.includes('docs.google.com')) { icon = 'fa-file-lines'; text = 'Abrir Documento'; }
-            return `<a href="${link}" target="_blank" class="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border-2 border-slate-100 text-slate-600 font-medium hover:border-orange-500 hover:text-orange-600 transition-all group"><i class="fa-solid ${icon} group-hover:scale-110 transition-transform"></i> ${text}</a>`;
+            let icon = 'fa-external-link-alt'; let text = 'Acceder al Recurso';
+            if(link.includes('drive.google.com')) { icon = 'fa-brands fa-google-drive'; text = 'Google Drive'; }
+            if(link.includes('docs.google.com')) { icon = 'fa-file-lines'; text = 'Documento'; }
+            return `<a href="${link}" target="_blank" class="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-white border border-slate-200 text-slate-700 font-medium text-sm hover:border-orange-500 hover:text-orange-600 shadow-sm transition-all group"><i class="fa-solid ${icon} group-hover:scale-110 transition-transform"></i> ${text}</a>`;
         }
 
         function applyBranding() {
             document.title = APP_CONFIG.pageTitle;
-            document.getElementById('app-title-sidebar').innerHTML = `<span class="text-slate-800">${APP_CONFIG.appName}</span>`;
+            document.getElementById('app-title-sidebar').innerText = APP_CONFIG.appName;
             document.getElementById('logo-icon-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
             document.getElementById('mobile-logo-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
             document.getElementById('app-title-mobile').innerText = APP_CONFIG.appName;
-            document.getElementById('status-text').innerText = APP_CONFIG.navSubtitle;
-            document.getElementById('dashboard-subtitle').innerText = `Resumen de: ${APP_CONFIG.pageTitle}`;
+            document.getElementById('dashboard-subtitle').innerText = `Gestión de aprendizaje: ${APP_CONFIG.pageTitle}`;
         }
 
         function populateToolSelectors() {
@@ -272,7 +351,6 @@
         }
 
         function loadData() { 
-            // Cargar directamente del Plan de Estudios estático
             lessons = [...PLAN_DE_ESTUDIOS];
             updateStats(); 
         }
@@ -282,9 +360,17 @@
             const view = document.getElementById(`view-${viewName}`);
             if(view) view.classList.remove('hidden');
             
-            document.querySelectorAll('.nav-item').forEach(el => { el.classList.remove('bg-orange-50', 'text-orange-600'); el.classList.add('text-slate-600'); });
+            // Actualizar Sidebar
+            document.querySelectorAll('.nav-item').forEach(el => { 
+                el.classList.remove('nav-active'); 
+                el.classList.add('nav-inactive');
+            });
+            
             const activeNav = document.getElementById(`nav-${viewName}`);
-            if(activeNav) { activeNav.classList.remove('text-slate-600'); activeNav.classList.add('bg-orange-50', 'text-orange-600'); }
+            if(activeNav) { 
+                activeNav.classList.remove('nav-inactive'); 
+                activeNav.classList.add('nav-active'); 
+            }
             
             if (viewName === 'lessons') renderFullList(); 
             if (viewName === 'dashboard') renderDashboardList();
@@ -297,50 +383,56 @@
         function createCardHTML(lesson, isCompact = false) {
             const style = getToolStyle(lesson.tool);
             const iconHtml = renderIcon(style.icon);
+            const typeBadge = lesson.type || 'Lección';
             
-            // Lógica de Bloqueo
             let contentHtml = '';
             let wrapperClass = '';
-            let lockOverlay = '';
+            let statusBadge = '';
+            let borderClass = style.color.match(/border-\S+/)[0]; // Extraer clase de borde
 
             if (lesson.activa) {
-                // LECCIÓN ACTIVA
                 const mediaHtml = getMediaEmbed(lesson.link);
                 contentHtml = `
-                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-tight">${lesson.title}</h3>
-                    <p class="text-sm text-slate-500 line-clamp-3 mb-2">${lesson.desc}</p>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2 leading-tight group-hover:text-orange-600 transition-colors">${lesson.title}</h3>
+                    <p class="text-sm text-slate-500 line-clamp-3 leading-relaxed mb-4">${lesson.desc}</p>
                     ${mediaHtml}
                 `;
+                statusBadge = `<span class="badge bg-green-100 text-green-700 border border-green-200"><i class="fa-solid fa-circle-check text-[10px] mr-1"></i> Disponible</span>`;
             } else {
-                // LECCIÓN BLOQUEADA
                 wrapperClass = 'lesson-locked';
                 contentHtml = `
-                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-tight">Lección Bloqueada</h3>
-                    <p class="text-sm text-slate-500 line-clamp-2">Contenido disponible próximamente.</p>
-                `;
-                lockOverlay = `
-                    <div class="lock-overlay">
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-white mb-2 mx-auto shadow-lg">
-                                <i class="fa-solid fa-lock"></i>
-                            </div>
-                            <span class="text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm">Próximamente</span>
+                    <div class="flex flex-col items-center justify-center py-8 text-center">
+                        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-3">
+                            <i class="fa-solid fa-lock"></i>
                         </div>
+                        <h3 class="text-base font-semibold text-slate-700 mb-1">Sesión Bloqueada</h3>
+                        <p class="text-xs text-slate-400">Disponible próximamente</p>
                     </div>
                 `;
+                statusBadge = `<span class="badge bg-slate-100 text-slate-500 border border-slate-200"><i class="fa-solid fa-lock text-[10px] mr-1"></i> Bloqueado</span>`;
             }
 
             return `
-                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all group relative overflow-hidden flex flex-col h-full ${wrapperClass}">
-                    ${lockOverlay}
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-50 to-slate-100 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform"></div>
-                    <div class="relative z-10 flex-1">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg ${style.color} text-white flex items-center justify-center shadow-md shadow-slate-200 tool-icon-bg overflow-hidden">${iconHtml}</div>
-                                <div><p class="text-xs font-bold uppercase tracking-wider text-slate-400">${lesson.week}</p><p class="text-sm font-semibold text-slate-700">${lesson.tool}</p></div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden group h-full ${wrapperClass}">
+                    <!-- Header Tarjeta -->
+                    <div class="px-5 py-4 border-b border-gray-50 flex justify-between items-start bg-gradient-to-r from-white to-gray-50 border-l-4 ${borderClass}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg ${style.color.replace(/border-\S+/,'')} bg-opacity-20 flex items-center justify-center tool-icon-bg shadow-sm">
+                                ${iconHtml}
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">${lesson.week}</p>
+                                <p class="text-xs font-bold text-slate-700">${lesson.tool}</p>
                             </div>
                         </div>
+                        <div class="flex flex-col items-end gap-2">
+                             ${statusBadge}
+                             <span class="text-[10px] text-slate-400 font-medium bg-slate-50 px-2 py-0.5 rounded border border-slate-100">${typeBadge}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Cuerpo Tarjeta -->
+                    <div class="p-5 flex-1 flex flex-col">
                         ${contentHtml}
                     </div>
                 </div>`;
@@ -348,7 +440,6 @@
 
         function renderDashboardList() {
             const container = document.getElementById('dashboard-list');
-            // Mostrar solo las 4 primeras (activas o no)
             container.innerHTML = lessons.slice(0, 4).map(l => createCardHTML(l, true)).join('');
         }
         function renderFullList() {
@@ -367,7 +458,7 @@
             
             const progress = Math.round((activeCount / lessons.length) * 100);
             document.getElementById('progress-bar-sidebar').style.width = `${progress}%`; 
-            document.getElementById('progress-text-sidebar').innerText = `${progress}% desbloqueado`;
+            document.getElementById('progress-text-sidebar').innerText = `${progress}%`;
         }
         window.router = router;
     </script>
