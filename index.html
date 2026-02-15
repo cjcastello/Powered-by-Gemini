@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -19,9 +19,12 @@
         .card-hover:hover .tool-icon-bg { transform: scale(1.1) rotate(5deg); }
         .icon-img-fit { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
         
-        /* NUEVO: Estilos para el video embebido */
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 12px; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* Estilo para lecciones bloqueadas */
+        .lesson-locked { filter: grayscale(1); opacity: 0.8; pointer-events: none; user-select: none; }
+        .lock-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; z-index: 20; backdrop-filter: blur(2px); border-radius: 1rem; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
@@ -29,10 +32,7 @@
     <!-- Sidebar -->
     <aside class="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex shadow-sm z-10">
         <div class="p-6 flex items-center gap-3 border-b border-slate-100">
-            <!-- Contenedor del Logo -->
-            <div id="logo-icon-container" class="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
-                <!-- Icono/Logo insertado por JS -->
-            </div>
+            <div id="logo-icon-container" class="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden"></div>
             <h1 class="font-bold text-lg tracking-tight text-slate-700" id="app-title-sidebar"></h1>
         </div>
 
@@ -43,19 +43,20 @@
             <button onclick="router('lessons')" id="nav-lessons" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
                 <i class="fa-solid fa-book-open w-5"></i> Lecciones
             </button>
-            <button onclick="router('add')" id="nav-add" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
-                <i class="fa-solid fa-plus-circle w-5"></i> Añadir Lección
+            <!-- Botón Añadir oculto para los usuarios normales -->
+            <button onclick="router('add')" id="nav-add" class="hidden nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
+                <i class="fa-solid fa-plus-circle w-5"></i> Añadir (Admin)
             </button>
         </nav>
 
         <div class="p-4 border-t border-slate-100">
             <div class="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-4 text-white">
                 <h3 class="text-sm font-semibold mb-1">Estado del Plan</h3>
-                <p class="text-xs opacity-90 mb-3" id="status-text">Mantén tu equipo actualizado.</p>
+                <p class="text-xs opacity-90 mb-3" id="status-text">Progreso del curso</p>
                 <div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
                     <div class="bg-white rounded-full h-1.5" style="width: 0%" id="progress-bar-sidebar"></div>
                 </div>
-                <p class="text-xs text-right opacity-90" id="progress-text-sidebar">0% completado</p>
+                <p class="text-xs text-right opacity-90" id="progress-text-sidebar">0% desbloqueado</p>
             </div>
         </div>
     </aside>
@@ -76,7 +77,6 @@
             <nav class="p-4 space-y-2">
                 <button onclick="router('dashboard'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg hover:bg-slate-50">Dashboard</button>
                 <button onclick="router('lessons'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg hover:bg-slate-50">Lecciones</button>
-                <button onclick="router('add'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg hover:bg-slate-50">Añadir Lección</button>
             </nav>
         </div>
 
@@ -90,55 +90,34 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                         <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm text-slate-500 font-medium">Total Lecciones</p><h3 class="text-3xl font-bold text-slate-800" id="stat-total">0</h3></div>
-                            <div class="p-2 bg-orange-50 text-orange-600 rounded-lg"><i class="fa-solid fa-layer-group"></i></div>
+                            <div><p class="text-sm text-slate-500 font-medium">Total Sesiones</p><h3 class="text-3xl font-bold text-slate-800" id="stat-total">0</h3></div>
+                            <div class="p-2 bg-slate-100 text-slate-600 rounded-lg"><i class="fa-solid fa-layer-group"></i></div>
                         </div>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                         <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm text-slate-500 font-medium">Semanas Activas</p><h3 class="text-3xl font-bold text-slate-800" id="stat-weeks">0</h3></div>
-                            <div class="p-2 bg-slate-100 text-slate-600 rounded-lg"><i class="fa-regular fa-calendar-check"></i></div>
+                            <div><p class="text-sm text-slate-500 font-medium">Disponibles</p><h3 class="text-3xl font-bold text-slate-800" id="stat-active">0</h3></div>
+                            <div class="p-2 bg-orange-50 text-orange-600 rounded-lg"><i class="fa-solid fa-unlock"></i></div>
                         </div>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                         <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm text-slate-500 font-medium">Herramienta Top</p><h3 class="text-xl font-bold text-slate-800 truncate" id="stat-top-tool">-</h3></div>
-                            <div class="p-2 bg-yellow-50 text-yellow-600 rounded-lg"><i class="fa-solid fa-ranking-star"></i></div>
+                            <div><p class="text-sm text-slate-500 font-medium">Bloqueadas</p><h3 class="text-xl font-bold text-slate-800 truncate" id="stat-locked">0</h3></div>
+                            <div class="p-2 bg-slate-100 text-slate-400 rounded-lg"><i class="fa-solid fa-lock"></i></div>
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-slate-700">Próximas Lecciones</h3>
-                    <button onclick="router('lessons')" class="text-sm text-orange-600 font-medium hover:underline">Ver todas</button>
+                    <h3 class="text-lg font-bold text-slate-700">Tu Ruta de Aprendizaje</h3>
+                    <button onclick="router('lessons')" class="text-sm text-orange-600 font-medium hover:underline">Ver todo el plan</button>
                 </div>
                 <div id="dashboard-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
-            </section>
-
-            <!-- VISTA: AÑADIR -->
-            <section id="view-add" class="hidden fade-in max-w-2xl mx-auto w-full">
-                <div class="mb-6">
-                    <button onclick="router('dashboard')" class="text-slate-400 hover:text-slate-600 mb-2 flex items-center gap-2 text-sm"><i class="fa-solid fa-arrow-left"></i> Volver</button>
-                    <h2 class="text-2xl font-bold text-slate-800">Nueva Lección</h2>
-                </div>
-                <form id="lesson-form" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Semana</label><input type="week" id="input-week" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></div>
-                        <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Herramienta</label><div class="relative"><select id="input-tool" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all appearance-none bg-white"><option value="" disabled selected>Seleccionar...</option></select><i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-400 pointer-events-none text-xs"></i></div></div>
-                    </div>
-                    <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Título</label><input type="text" id="input-title" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></div>
-                    <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Descripción</label><textarea id="input-desc" rows="4" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></textarea></div>
-                    <div class="space-y-2"><label class="text-sm font-medium text-slate-700">Enlace a Recurso (Video YouTube, Drive, PDF...)</label><div class="relative"><i class="fa-solid fa-link absolute left-4 top-3.5 text-slate-400 text-sm"></i><input type="url" id="input-link" placeholder="Ej: https://youtube.com/..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all"></div></div>
-                    <div class="pt-4 flex gap-3">
-                        <button type="button" onclick="router('dashboard')" class="flex-1 px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50">Cancelar</button>
-                        <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-orange-600 text-white font-medium hover:bg-orange-700 shadow-lg shadow-orange-200 transition-all transform active:scale-95">Guardar</button>
-                    </div>
-                </form>
             </section>
 
             <!-- VISTA: LECCIONES -->
             <section id="view-lessons" class="hidden fade-in max-w-6xl mx-auto w-full">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div><h2 class="text-2xl font-bold text-slate-800">Plan de Formación</h2></div>
+                    <div><h2 class="text-2xl font-bold text-slate-800">Plan de Formación</h2><p class="text-slate-500">Sesiones semanales.</p></div>
                     <div class="flex gap-2">
                         <div class="relative"><i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-xs"></i><input type="text" id="search-input" onkeyup="filterLessons()" placeholder="Buscar..." class="pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-orange-500 w-full md:w-64"></div>
                         <select id="filter-tool" onchange="filterLessons()" class="px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-orange-500 bg-white"><option value="all">Todas</option></select>
@@ -149,23 +128,17 @@
         </div>
     </main>
 
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3"><i class="fa-solid fa-check-circle text-green-400"></i><span id="toast-message">Operación exitosa</span></div>
-    <div id="delete-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-all" id="delete-modal-content"><h3 class="text-lg font-bold text-slate-800 mb-2">¿Eliminar?</h3><p class="text-slate-500 text-sm mb-6">No se puede deshacer.</p><div class="flex justify-end gap-3"><button onclick="closeDeleteModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 font-medium">Cancelar</button><button id="confirm-delete-btn" class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 font-medium shadow-md shadow-red-200">Eliminar</button></div></div></div>
-
     <script>
         // ==========================================
         //  CONFIGURACIÓN FRITTA
         // ==========================================
         
         const APP_CONFIG = {
-            appName: "Fritta", // Tu nombre personalizado
-            pageTitle: "Formación Powered by Gemini",
-            navSubtitle: "Plan semanal",
-            
-            // Tu logo
+            appName: "Powered by Gemini",
+            pageTitle: "Formación Fritta",
+            navSubtitle: "Plan Semanal",
             logoIcon: "iconoFRITTA_COLOR_sRGB.jpg", 
             
-            // Colores de las herramientas
             tools: {
                 'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'bg-gradient-to-br from-blue-500 to-purple-500', text: 'text-blue-600' },
                 'Google Docs':     { icon: 'fa-solid fa-file-word', color: 'bg-blue-500', text: 'text-blue-600' },
@@ -175,13 +148,85 @@
                 'Google Meet':     { icon: 'fa-solid fa-video', color: 'bg-teal-500', text: 'text-teal-600' },
                 'Drive':           { icon: 'fa-brands fa-google-drive', color: 'bg-slate-500', text: 'text-slate-600' },
             },
-            
             defaultTool: { icon: 'fa-solid fa-cube', color: 'bg-slate-400', text: 'text-slate-600' }
         };
 
-        // --- SISTEMA ---
-        const STORAGE_KEY = 'gemini_training_data_v1';
-        let lessons = []; let lessonToDelete = null;
+        // ==========================================
+        //  🎓 PLAN DE ESTUDIOS (EDITA AQUÍ CADA SEMANA)
+        // ==========================================
+        // Cambia 'activa: false' a 'activa: true' para desbloquear una lección.
+        
+        const PLAN_DE_ESTUDIOS = [
+            {
+                id: 's1',
+                week: 'Semana 1',
+                tool: 'Gemini Advanced',
+                title: 'Introducción a la IA Generativa',
+                desc: 'Conceptos básicos, cómo entrar a Gemini y primeros pasos con el chat.',
+                link: 'https://www.youtube.com/watch?v=VIDEO_ID_AQUI', // Pon aquí tu enlace
+                activa: true // <--- ESTA YA ESTÁ VISIBLE
+            },
+            {
+                id: 's2',
+                week: 'Semana 2',
+                tool: 'Gmail',
+                title: 'Redacción de Correos Inteligente',
+                desc: 'Cómo usar Gemini para responder emails y redactar borradores rápidamente.',
+                link: '', 
+                activa: false // <--- BLOQUEADA (Candado)
+            },
+            {
+                id: 's3',
+                week: 'Semana 3',
+                tool: 'Google Docs',
+                title: 'Creación de Documentos',
+                desc: 'Generar ideas, estructuras y resumir textos largos en segundos.',
+                link: '',
+                activa: false // <--- BLOQUEADA
+            },
+            {
+                id: 's4',
+                week: 'Semana 4',
+                tool: 'Google Sheets',
+                title: 'Análisis de Datos y Fórmulas',
+                desc: 'Organiza información y crea fórmulas complejas solo pidiéndolo.',
+                link: '',
+                activa: false 
+            },
+            {
+                id: 's5',
+                week: 'Semana 5',
+                tool: 'Google Slides',
+                title: 'Presentaciones Impactantes',
+                desc: 'Generación de imágenes y estructuras para diapositivas.',
+                link: '',
+                activa: false 
+            },
+            {
+                id: 's6',
+                week: 'Semana 6',
+                tool: 'Google Meet',
+                title: 'Reuniones Eficientes',
+                desc: 'Fondos generados por IA y mejora de imagen y sonido.',
+                link: '',
+                activa: false 
+            },
+            {
+                id: 's7',
+                week: 'Semana 7',
+                tool: 'Gemini Advanced',
+                title: 'Trucos Avanzados y Prompts',
+                desc: 'Cómo pedir las cosas para obtener los mejores resultados posibles.',
+                link: '',
+                activa: false 
+            }
+        ];
+
+        // ==========================================
+        //  FIN DE EDICIÓN
+        // ==========================================
+
+        let lessons = [];
 
         document.addEventListener('DOMContentLoaded', () => { applyBranding(); populateToolSelectors(); loadData(); router('dashboard'); });
         
@@ -191,44 +236,26 @@
             return `<i class="${iconString} ${extraClasses}"></i>`;
         }
 
-        // --- NUEVO: FUNCIÓN MÁGICA PARA VIDEOS Y RECURSOS ---
         function getMediaEmbed(link) {
             if (!link) return '';
-            
-            // Detectar YouTube
             const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
             const ytMatch = link.match(youtubeRegex);
             
             if (ytMatch && ytMatch[1]) {
-                return `
-                <div class="video-container">
-                    <iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>`;
+                return `<div class="video-container"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
             }
-            
-            // Detectar Imagen directa
             if (link.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
                 return `<div class="mt-4 rounded-xl overflow-hidden border border-slate-100"><img src="${link}" class="w-full h-48 object-cover" alt="Recurso visual"></div>`;
             }
-
-            // Enlace Genérico (Drive, PDF, Docs) con botón bonito
-            let icon = 'fa-external-link-alt';
-            let text = 'Ver Recurso';
+            let icon = 'fa-external-link-alt'; let text = 'Ver Recurso';
             if(link.includes('drive.google.com')) { icon = 'fa-brands fa-google-drive'; text = 'Abrir Google Drive'; }
             if(link.includes('docs.google.com')) { icon = 'fa-file-lines'; text = 'Abrir Documento'; }
-            
-            return `
-                <a href="${link}" target="_blank" class="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border-2 border-slate-100 text-slate-600 font-medium hover:border-orange-500 hover:text-orange-600 transition-all group">
-                    <i class="fa-solid ${icon} group-hover:scale-110 transition-transform"></i> ${text}
-                </a>
-            `;
+            return `<a href="${link}" target="_blank" class="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border-2 border-slate-100 text-slate-600 font-medium hover:border-orange-500 hover:text-orange-600 transition-all group"><i class="fa-solid ${icon} group-hover:scale-110 transition-transform"></i> ${text}</a>`;
         }
-        // --------------------------------------------------------
 
         function applyBranding() {
             document.title = APP_CONFIG.pageTitle;
-            const sidebarTitle = document.getElementById('app-title-sidebar');
-            sidebarTitle.innerHTML = `<span class="text-slate-800">${APP_CONFIG.appName}</span>`;
+            document.getElementById('app-title-sidebar').innerHTML = `<span class="text-slate-800">${APP_CONFIG.appName}</span>`;
             document.getElementById('logo-icon-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
             document.getElementById('mobile-logo-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
             document.getElementById('app-title-mobile').innerText = APP_CONFIG.appName;
@@ -237,85 +264,112 @@
         }
 
         function populateToolSelectors() {
-            const select = document.getElementById('input-tool'); const filter = document.getElementById('filter-tool');
-            while (select.options.length > 1) select.remove(1); while (filter.options.length > 1) filter.remove(1);
+            const filter = document.getElementById('filter-tool');
+            while (filter.options.length > 1) filter.remove(1);
             Object.keys(APP_CONFIG.tools).forEach(toolName => {
-                const opt1 = document.createElement('option'); opt1.value = toolName; opt1.innerText = toolName; select.appendChild(opt1);
                 const opt2 = document.createElement('option'); opt2.value = toolName; opt2.innerText = toolName; filter.appendChild(opt2);
             });
         }
 
-        function loadData() { const data = localStorage.getItem(STORAGE_KEY); if (data) { lessons = JSON.parse(data); lessons.sort((a, b) => b.week.localeCompare(a.week)); } updateStats(); }
-        function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(lessons)); updateStats(); const currentView = document.querySelector('section:not(.hidden)').id.replace('view-', ''); if(currentView === 'dashboard') renderDashboardList(); if(currentView === 'lessons') renderFullList(); }
+        function loadData() { 
+            // Cargar directamente del Plan de Estudios estático
+            lessons = [...PLAN_DE_ESTUDIOS];
+            updateStats(); 
+        }
 
         function router(viewName) {
             document.querySelectorAll('section[id^="view-"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            const view = document.getElementById(`view-${viewName}`);
+            if(view) view.classList.remove('hidden');
+            
             document.querySelectorAll('.nav-item').forEach(el => { el.classList.remove('bg-orange-50', 'text-orange-600'); el.classList.add('text-slate-600'); });
             const activeNav = document.getElementById(`nav-${viewName}`);
             if(activeNav) { activeNav.classList.remove('text-slate-600'); activeNav.classList.add('bg-orange-50', 'text-orange-600'); }
-            if (viewName === 'lessons') renderFullList(); if (viewName === 'dashboard') renderDashboardList();
+            
+            if (viewName === 'lessons') renderFullList(); 
+            if (viewName === 'dashboard') renderDashboardList();
         }
 
         function toggleMobileMenu() { document.getElementById('mobile-menu').classList.add('hidden'); }
-
-        document.getElementById('lesson-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newLesson = { id: Date.now().toString(), week: document.getElementById('input-week').value, tool: document.getElementById('input-tool').value, title: document.getElementById('input-title').value, desc: document.getElementById('input-desc').value, link: document.getElementById('input-link').value, createdAt: new Date().toISOString() };
-            lessons.unshift(newLesson); saveData(); e.target.reset(); showToast('Lección añadida correctamente'); router('lessons');
-        });
 
         function getToolStyle(toolName) { return APP_CONFIG.tools[toolName] || APP_CONFIG.defaultTool; }
 
         function createCardHTML(lesson, isCompact = false) {
             const style = getToolStyle(lesson.tool);
-            const weekFormatted = lesson.week.replace('W', ' Sem ');
             const iconHtml = renderIcon(style.icon);
-            // AQUÍ ES DONDE SE GENERA EL VIDEO O EL BOTÓN
-            const mediaHtml = getMediaEmbed(lesson.link);
+            
+            // Lógica de Bloqueo
+            let contentHtml = '';
+            let wrapperClass = '';
+            let lockOverlay = '';
+
+            if (lesson.activa) {
+                // LECCIÓN ACTIVA
+                const mediaHtml = getMediaEmbed(lesson.link);
+                contentHtml = `
+                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-tight">${lesson.title}</h3>
+                    <p class="text-sm text-slate-500 line-clamp-3 mb-2">${lesson.desc}</p>
+                    ${mediaHtml}
+                `;
+            } else {
+                // LECCIÓN BLOQUEADA
+                wrapperClass = 'lesson-locked';
+                contentHtml = `
+                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-tight">Lección Bloqueada</h3>
+                    <p class="text-sm text-slate-500 line-clamp-2">Contenido disponible próximamente.</p>
+                `;
+                lockOverlay = `
+                    <div class="lock-overlay">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-white mb-2 mx-auto shadow-lg">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <span class="text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm">Próximamente</span>
+                        </div>
+                    </div>
+                `;
+            }
 
             return `
-                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-shadow card-hover group relative overflow-hidden flex flex-col h-full">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-50 to-slate-100 rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform"></div>
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all group relative overflow-hidden flex flex-col h-full ${wrapperClass}">
+                    ${lockOverlay}
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-50 to-slate-100 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform"></div>
                     <div class="relative z-10 flex-1">
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-lg ${style.color} text-white flex items-center justify-center shadow-md shadow-slate-200 tool-icon-bg overflow-hidden">${iconHtml}</div>
-                                <div><p class="text-xs font-bold uppercase tracking-wider text-slate-400">${weekFormatted}</p><p class="text-sm font-semibold text-slate-700">${lesson.tool}</p></div>
+                                <div><p class="text-xs font-bold uppercase tracking-wider text-slate-400">${lesson.week}</p><p class="text-sm font-semibold text-slate-700">${lesson.tool}</p></div>
                             </div>
-                            ${!isCompact ? `<button onclick="promptDelete('${lesson.id}')" class="text-slate-300 hover:text-red-500 transition-colors p-1"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                         </div>
-                        <h3 class="text-lg font-bold text-slate-800 mb-2 leading-tight">${lesson.title}</h3>
-                        <p class="text-sm text-slate-500 line-clamp-2 mb-2">${lesson.desc}</p>
-                        
-                        <!-- Mostramos el video/recurso aquí -->
-                        ${mediaHtml}
+                        ${contentHtml}
                     </div>
                 </div>`;
         }
 
         function renderDashboardList() {
             const container = document.getElementById('dashboard-list');
-            if (lessons.length === 0) { container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200"><i class="fa-solid fa-folder-open text-3xl mb-3 opacity-50"></i><p>No hay lecciones programadas.</p><button onclick="router('add')" class="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition">Crear lección</button></div>`; return; }
+            // Mostrar solo las 4 primeras (activas o no)
             container.innerHTML = lessons.slice(0, 4).map(l => createCardHTML(l, true)).join('');
         }
         function renderFullList() {
             const container = document.getElementById('lessons-grid'); const search = document.getElementById('search-input').value.toLowerCase(); const filterTool = document.getElementById('filter-tool').value;
             const filtered = lessons.filter(l => { const matchSearch = l.title.toLowerCase().includes(search) || l.desc.toLowerCase().includes(search); const matchTool = filterTool === 'all' || l.tool === filterTool; return matchSearch && matchTool; });
-            container.innerHTML = filtered.length ? filtered.map(l => createCardHTML(l, false)).join('') : `<div class="col-span-full text-center py-10 text-slate-400">Sin resultados.</div>`;
+            container.innerHTML = filtered.map(l => createCardHTML(l, false)).join('');
         }
         function filterLessons() { renderFullList(); }
         function updateStats() {
-            document.getElementById('stat-total').innerText = lessons.length; const weeks = new Set(lessons.map(l => l.week)); document.getElementById('stat-weeks').innerText = weeks.size;
-            if (lessons.length > 0) { const counts = {}; lessons.forEach(l => { counts[l.tool] = (counts[l.tool] || 0) + 1; }); document.getElementById('stat-top-tool').innerText = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b); } else { document.getElementById('stat-top-tool').innerText = "-"; }
-            const progress = Math.min(lessons.length * 10, 100); document.getElementById('progress-bar-sidebar').style.width = `${progress}%`; document.getElementById('progress-text-sidebar').innerText = `${progress}% completado`;
+            document.getElementById('stat-total').innerText = lessons.length;
+            const activeCount = lessons.filter(l => l.activa).length;
+            const lockedCount = lessons.length - activeCount;
+            
+            document.getElementById('stat-active').innerText = activeCount;
+            document.getElementById('stat-locked').innerText = lockedCount;
+            
+            const progress = Math.round((activeCount / lessons.length) * 100);
+            document.getElementById('progress-bar-sidebar').style.width = `${progress}%`; 
+            document.getElementById('progress-text-sidebar').innerText = `${progress}% desbloqueado`;
         }
-        function showToast(msg) { const toast = document.getElementById('toast'); document.getElementById('toast-message').innerText = msg; toast.classList.remove('translate-y-20', 'opacity-0'); setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000); }
-        function promptDelete(id) { lessonToDelete = id; document.getElementById('delete-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('delete-modal-content').classList.replace('scale-95', 'scale-100'); }, 10); }
-        function closeDeleteModal() { lessonToDelete = null; const content = document.getElementById('delete-modal-content'); content.classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('delete-modal').classList.add('hidden'); }, 150); }
-        document.getElementById('confirm-delete-btn').addEventListener('click', () => { if (lessonToDelete) { lessons = lessons.filter(l => l.id !== lessonToDelete); saveData(); closeDeleteModal(); showToast('Lección eliminada'); } });
         window.router = router;
     </script>
 </body>
 </html>
-
