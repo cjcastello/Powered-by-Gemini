@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -311,7 +311,8 @@
                 tool: 'Gemini Advanced',
                 title: 'Introducción a la IA Generativa',
                 desc: 'Domina los conceptos básicos, aprende a acceder a Gemini y da tus primeros pasos con el chat interactivo.',
-                link: 'https://www.youtube.com/watch?v=VIDEO_ID_AQUI', // VIDEO AQUI
+                // VIDEO O ENLACE AQUI (Puede ser YouTube, Drive Video o enlace normal)
+                link: 'https://www.youtube.com/watch?v=VIDEO_ID_AQUI', 
                 resourceLink: 'https://docs.google.com/presentation/d/TU_PRESENTACION_ID/edit', // PRESENTACION AQUI
                 activa: true,
                 type: 'Video',
@@ -420,15 +421,27 @@
 
         function getMediaEmbed(link) {
             if (!link) return '';
+            
+            // 1. YouTube
             const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
             const ytMatch = link.match(youtubeRegex);
-            
             if (ytMatch && ytMatch[1]) {
                 return `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
             }
+
+            // 2. Google Drive VIDEO Embed (detecta /file/d/)
+            const driveRegex = /drive\.google\.com\/file\/d\/([^\/]+)/;
+            const driveMatch = link.match(driveRegex);
+            if (driveMatch && driveMatch[1]) {
+                 return `<div class="video-wrapper"><iframe src="https://drive.google.com/file/d/${driveMatch[1]}/preview" frameborder="0" allowfullscreen></iframe></div>`;
+            }
+
+            // 3. Imágenes
             if (link.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
                 return `<div class="mt-4 rounded-xl overflow-hidden border border-slate-200 shadow-sm"><img src="${link}" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500" alt="Recurso visual"></div>`;
             }
+
+            // 4. Enlace Genérico (Fallback)
             let icon = 'fa-arrow-up-right-from-square'; let text = 'Acceder al Recurso';
             if(link.includes('drive.google.com')) { icon = 'fa-brands fa-google-drive'; text = 'Google Drive'; }
             if(link.includes('docs.google.com')) { icon = 'fa-file-lines'; text = 'Documento'; }
