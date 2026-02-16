@@ -189,7 +189,7 @@
                     
                     <div class="relative z-10 max-w-3xl">
                         <span class="inline-block py-1 px-3 rounded-full bg-[#1F1F1F] border border-[#3E3E3E] text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-4" id="current-date">--</span>
-                        <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">Bienvenido.</h2>
+                        <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">Te damos la bienvenida.</h2>
                         <p class="text-neutral-400 text-lg mb-8 leading-relaxed max-w-2xl">Accede a formaciones intensivas de 30 minutos sobre IA Generativa. Aprende a dominar Gemini y explora las nuevas herramientas que están transformando el trabajo diario.</p>
                         <button onclick="router('lessons')" class="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-orange-900/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-2 inline-flex">
                             Ver Lecciones <i class="fa-solid fa-arrow-right ml-1"></i>
@@ -398,7 +398,7 @@
             const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('current-date').innerText = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
             // Saludo Fijo
-            document.getElementById('greeting-text').innerText = "Bienvenido.";
+            document.getElementById('greeting-text').innerText = "Hola.";
         }
         
         function renderIcon(iconString, extraClasses = '') {
