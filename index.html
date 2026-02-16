@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -14,19 +14,19 @@
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #111827; /* CAMBIO: Gris Oscuro (Gray-900) en vez de Azul */
-            color: #E2E8F0; /* Texto Claro */
+            background-color: #F3F4F6; /* CAMBIO: Fondo Gris Claro */
+            color: #1F2937; /* Texto Oscuro */
         }
         
         /* Animaciones */
         .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
         
-        /* Paneles Oscuros (Glassmorphism Dark) */
+        /* Paneles Claros (Glassmorphism Light) */
         .glass-panel {
-            background: #1E293B; /* Slate-800 */
-            border: 1px solid #334155; /* Slate-700 */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
         
         /* Barra Lateral Negra */
@@ -35,11 +35,11 @@
             border-right: 1px solid #1f2937;
         }
 
-        /* Scrollbar Oscuro */
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #111827; } /* CAMBIO: Coincide con fondo */
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+        ::-webkit-scrollbar-track { background: #F3F4F6; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
         .icon-img-fit { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
         
@@ -50,19 +50,21 @@
             overflow: hidden;
             border-radius: 12px;
             margin-top: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             background: #000;
         }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* Estados de Lección */
+        /* Estados de Lección (Tema Claro) */
         .lesson-card { 
-            background-color: #1E293B; 
-            border: 1px solid #334155;
+            background-color: #FFFFFF; 
+            border: 1px solid #E5E7EB;
             transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         .lesson-card:hover {
-            border-color: #F97316; /* Orange Border on Hover */
+            border-color: #F97316; /* Borde Naranja al pasar mouse */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
 
@@ -71,18 +73,18 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(11, 17, 32, 0.7); /* Capa oscura */
+            background: rgba(255, 255, 255, 0.6); /* Capa clara */
             backdrop-filter: grayscale(1) blur(1px);
             z-index: 5;
         }
         
-        /* Navegación */
-        .nav-item { position: relative; transition: all 0.2s ease; color: #94A3B8; }
+        /* Navegación Sidebar */
+        .nav-item { position: relative; transition: all 0.2s ease; color: #9CA3AF; }
         .nav-item:hover { color: #fff; background: rgba(255,255,255,0.1); }
         
         .nav-active { 
             background: #111; 
-            color: #F97316 !important; /* Orange Text */
+            color: #F97316 !important; 
             font-weight: 600;
             border-right: 3px solid #F97316;
         }
@@ -103,13 +105,12 @@
     <!-- Sidebar Negra (Izquierda) -->
     <aside class="w-[280px] sidebar-bg flex flex-col hidden md:flex shadow-2xl z-30">
         
-        <!-- Logo Area Grande y Centrado -->
-        <div class="flex flex-col items-center justify-center py-6 px-4 border-b border-gray-900">
-            <!-- CAMBIO: Contenedor Alargado (Rectangular) y menos alto -->
-            <div id="logo-icon-container" class="w-full h-20 rounded-xl bg-white p-2 flex items-center justify-center overflow-hidden shadow-lg mb-3"></div>
+        <!-- Logo Integrado en Columna -->
+        <div class="flex flex-col items-center justify-center py-8 px-6 border-b border-gray-900">
+            <!-- CAMBIO: Sin fondo blanco, integrado -->
+            <div id="logo-icon-container" class="w-full flex items-center justify-center mb-2"></div>
             
-            <!-- Texto Debajo -->
-            <div class="text-center">
+            <div class="text-center w-full">
                 <h1 class="font-bold text-white text-base tracking-tight leading-snug" id="app-title-sidebar"></h1>
                 <p class="text-[10px] text-gray-500 font-medium uppercase tracking-widest mt-1">Academy Platform</p>
             </div>
@@ -157,10 +158,10 @@
     <!-- Main Content (Derecha) -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
         
-        <!-- Mobile Header (Oscuro) -->
+        <!-- Mobile Header -->
         <header class="md:hidden bg-black border-b border-gray-800 p-4 flex justify-between items-center text-white z-40">
             <div class="flex items-center gap-3">
-                <div id="mobile-logo-container" class="w-8 h-8 bg-white rounded-md p-0.5 flex items-center justify-center overflow-hidden"></div>
+                <div id="mobile-logo-container" class="w-8 h-8 flex items-center justify-center overflow-hidden"></div>
                 <span class="font-bold text-sm tracking-tight" id="app-title-mobile">App</span>
             </div>
             <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-gray-400 hover:text-white">
@@ -181,13 +182,12 @@
             <!-- VIEW: DASHBOARD -->
             <section id="view-dashboard" class="fade-in max-w-7xl mx-auto w-full pb-12">
                 
-                <!-- Hero Section -->
-                <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-3xl p-8 md:p-12 mb-10 overflow-hidden shadow-2xl border border-gray-800">
-                    <!-- Glow effect -->
-                    <div class="absolute top-0 right-0 w-96 h-96 bg-orange-600 rounded-full mix-blend-screen filter blur-[100px] opacity-10 -mr-20 -mt-20"></div>
+                <!-- Hero Section: Fondo Negro igual que la columna -->
+                <div class="relative bg-black rounded-3xl p-8 md:p-12 mb-10 overflow-hidden shadow-2xl border border-gray-800">
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-orange-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 -mr-20 -mt-20"></div>
                     
                     <div class="relative z-10 max-w-2xl">
-                        <span class="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-4" id="current-date">--</span>
+                        <span class="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-4" id="current-date">--</span>
                         <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">Bienvenido.</h2>
                         <p class="text-gray-400 text-lg mb-8 leading-relaxed">Accede a las últimas sesiones formativas sobre Gemini y mejora tu productividad.</p>
                         <button onclick="router('lessons')" class="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-orange-900/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-2 inline-flex">
@@ -199,31 +199,31 @@
                 <!-- Stats Overview -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
                     <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
-                        <div class="w-14 h-14 rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50 flex items-center justify-center text-2xl"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-2xl"><i class="fa-solid fa-layer-group"></i></div>
                         <div>
                             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total</p>
-                            <h3 class="text-3xl font-bold text-white" id="stat-total">0</h3>
+                            <h3 class="text-3xl font-bold text-gray-900" id="stat-total">0</h3>
                         </div>
                     </div>
                     <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
-                        <div class="w-14 h-14 rounded-full bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 flex items-center justify-center text-2xl"><i class="fa-solid fa-unlock"></i></div>
+                        <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center text-2xl"><i class="fa-solid fa-unlock"></i></div>
                         <div>
                             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Activas</p>
-                            <h3 class="text-3xl font-bold text-white" id="stat-active">0</h3>
+                            <h3 class="text-3xl font-bold text-gray-900" id="stat-active">0</h3>
                         </div>
                     </div>
                     <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
-                        <div class="w-14 h-14 rounded-full bg-gray-800 text-gray-500 border border-gray-700 flex items-center justify-center text-2xl"><i class="fa-solid fa-lock"></i></div>
+                        <div class="w-14 h-14 rounded-full bg-gray-100 text-gray-500 border border-gray-200 flex items-center justify-center text-2xl"><i class="fa-solid fa-lock"></i></div>
                         <div>
                             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Bloqueadas</p>
-                            <h3 class="text-3xl font-bold text-white" id="stat-locked">0</h3>
+                            <h3 class="text-3xl font-bold text-gray-900" id="stat-locked">0</h3>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-end mb-6 border-b border-gray-800 pb-4">
+                <div class="flex justify-between items-end mb-6 border-b border-gray-200 pb-4">
                     <div>
-                        <h3 class="text-xl font-bold text-white">Sesiones Destacadas</h3>
+                        <h3 class="text-xl font-bold text-gray-900">Sesiones Destacadas</h3>
                         <p class="text-gray-500 text-sm mt-1">Acceso directo a tu contenido.</p>
                     </div>
                 </div>
@@ -235,16 +235,16 @@
             <section id="view-lessons" class="hidden fade-in max-w-7xl mx-auto w-full pb-12">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <div>
-                        <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo Completo</h2>
+                        <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Catálogo Completo</h2>
                         <p class="text-gray-500 mt-2 text-lg">Todas las sesiones disponibles para tu equipo.</p>
                     </div>
-                    <div class="flex gap-3 bg-gray-900 p-1.5 rounded-xl border border-gray-800 shadow-sm w-full md:w-auto">
+                    <div class="flex gap-3 bg-white p-1.5 rounded-xl border border-gray-200 shadow-sm w-full md:w-auto">
                         <div class="relative flex-1 md:flex-none">
-                            <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-                            <input type="text" id="search-input" onkeyup="filterLessons()" placeholder="Buscar lección..." class="pl-10 pr-4 py-2.5 bg-transparent text-sm focus:outline-none w-full md:w-64 text-gray-300 placeholder-gray-600">
+                            <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-gray-400 text-sm"></i>
+                            <input type="text" id="search-input" onkeyup="filterLessons()" placeholder="Buscar lección..." class="pl-10 pr-4 py-2.5 bg-transparent text-sm focus:outline-none w-full md:w-64 text-gray-700 placeholder-gray-400">
                         </div>
-                        <div class="w-px bg-gray-800 my-1"></div>
-                        <select id="filter-tool" onchange="filterLessons()" class="px-3 py-2.5 bg-transparent text-sm focus:outline-none text-gray-400 font-medium cursor-pointer hover:text-white">
+                        <div class="w-px bg-gray-200 my-1"></div>
+                        <select id="filter-tool" onchange="filterLessons()" class="px-3 py-2.5 bg-transparent text-sm focus:outline-none text-gray-600 font-medium cursor-pointer hover:text-orange-600">
                             <option value="all">Todas</option>
                         </select>
                     </div>
@@ -254,14 +254,14 @@
             
             <!-- VIEW: ADD (ADMIN) -->
             <section id="view-add" class="hidden fade-in max-w-2xl mx-auto w-full">
-                <button onclick="router('dashboard')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-medium transition-colors"><i class="fa-solid fa-arrow-left"></i> Volver</button>
-                <div class="bg-gray-900 p-10 rounded-3xl border border-gray-800 text-center">
-                    <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center mx-auto mb-6 text-gray-600 border border-gray-800">
+                <button onclick="router('dashboard')" class="text-gray-500 hover:text-gray-800 mb-4 flex items-center gap-2 text-sm font-medium transition-colors"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+                <div class="bg-white p-10 rounded-3xl border border-gray-200 text-center shadow-sm">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-400 border border-gray-100">
                         <i class="fa-solid fa-code text-3xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Modo Desarrollador</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Modo Desarrollador</h2>
                     <p class="text-gray-500 mb-8 max-w-md mx-auto">Para añadir lecciones, edita la constante <code>PLAN_DE_ESTUDIOS</code> en el código fuente.</p>
-                    <a href="https://github.com" target="_blank" class="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                    <a href="https://github.com" target="_blank" class="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
                         <i class="fa-brands fa-github"></i> Ir a GitHub
                     </a>
                 </div>
@@ -280,17 +280,17 @@
             navSubtitle: "Plan Semanal",
             logoIcon: "FRITTA_NEGRO_sRGB_2.jpg", 
             
-            // Colores oscuros para las herramientas
+            // Colores (Clases de Tailwind)
             tools: {
-                'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
-                'Google Docs':     { icon: 'fa-solid fa-file-lines', color: 'text-blue-500', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
-                'Google Sheets':   { icon: 'fa-solid fa-table', color: 'text-emerald-400', bg: 'bg-emerald-900/20', border: 'border-emerald-800/30' },
-                'Google Slides':   { icon: 'fa-solid fa-presentation-screen', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
-                'Gmail':           { icon: 'fa-solid fa-envelope', color: 'text-red-400', bg: 'bg-red-900/20', border: 'border-red-800/30' },
-                'Google Meet':     { icon: 'fa-solid fa-video', color: 'text-teal-400', bg: 'bg-teal-900/20', border: 'border-teal-800/30' },
-                'Drive':           { icon: 'fa-brands fa-google-drive', color: 'text-gray-400', bg: 'bg-gray-800', border: 'border-gray-700' },
+                'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+                'Google Docs':     { icon: 'fa-solid fa-file-lines', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-100' },
+                'Google Sheets':   { icon: 'fa-solid fa-table', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+                'Google Slides':   { icon: 'fa-solid fa-presentation-screen', color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-100' },
+                'Gmail':           { icon: 'fa-solid fa-envelope', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-100' },
+                'Google Meet':     { icon: 'fa-solid fa-video', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100' },
+                'Drive':           { icon: 'fa-brands fa-google-drive', color: 'text-slate-600', bg: 'bg-slate-100', border: 'border-slate-200' },
             },
-            defaultTool: { icon: 'fa-solid fa-cube', color: 'text-gray-400', bg: 'bg-gray-800', border: 'border-gray-700' }
+            defaultTool: { icon: 'fa-solid fa-cube', color: 'text-slate-600', bg: 'bg-slate-100', border: 'border-slate-200' }
         };
 
         // ==========================================
@@ -430,7 +430,7 @@
 
             // 3. Imágenes
             if (link.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
-                return `<div class="mt-4 rounded-xl overflow-hidden border border-gray-700 shadow-sm"><img src="${link}" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500" alt="Recurso visual"></div>`;
+                return `<div class="mt-4 rounded-xl overflow-hidden border border-gray-200 shadow-sm"><img src="${link}" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500" alt="Recurso visual"></div>`;
             }
 
             // 4. Enlace Genérico (Fallback)
@@ -439,8 +439,8 @@
             if(link.includes('docs.google.com')) { icon = 'fa-file-lines'; text = 'Documento'; }
             
             return `
-                <a href="${link}" target="_blank" class="mt-4 flex items-center justify-between px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-300 font-medium text-sm hover:border-orange-500 hover:text-orange-400 transition-all group">
-                    <span class="flex items-center gap-2"><i class="fa-solid ${icon} text-gray-500 group-hover:text-orange-500 transition-colors"></i> ${text}</span>
+                <a href="${link}" target="_blank" class="mt-4 flex items-center justify-between px-4 py-3 rounded-xl bg-gray-100 border border-gray-200 text-gray-700 font-medium text-sm hover:border-orange-500 hover:text-orange-600 transition-all group">
+                    <span class="flex items-center gap-2"><i class="fa-solid ${icon} text-gray-400 group-hover:text-orange-500 transition-colors"></i> ${text}</span>
                     <i class="fa-solid fa-chevron-right text-xs opacity-50 group-hover:translate-x-1 transition-transform"></i>
                 </a>`;
         }
@@ -510,40 +510,41 @@
                 let resourceButton = '';
                 if (lesson.resourceLink) {
                     resourceButton = `
-                        <a href="${lesson.resourceLink}" target="_blank" class="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-gray-300 text-xs font-semibold hover:border-orange-500 hover:text-orange-400 shadow-sm transition-all group">
-                            <i class="fa-solid fa-file-powerpoint text-orange-500 group-hover:scale-110 transition-transform"></i> Ver Presentación
+                        <a href="${lesson.resourceLink}" target="_blank" class="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gray-200 border border-gray-300 text-gray-800 text-xs font-semibold hover:bg-gray-300 hover:text-gray-900 shadow-sm transition-all group">
+                            <i class="fa-solid fa-file-powerpoint text-gray-600 group-hover:scale-110 transition-transform"></i> Ver Presentación
                         </a>
                     `;
                 }
 
                 contentHtml = `
                     <div class="mb-4">
-                        <div class="flex items-center gap-2 mb-2">
-                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-gray-800 px-2 py-0.5 rounded">${lesson.week}</span>
-                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${duration}</span>
+                        <div class="flex items-center gap-2 mb-1">
+                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded">${lesson.week}</span>
+                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${duration}</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white leading-snug mb-2 group-hover:text-orange-500 transition-colors">${lesson.title}</h3>
-                        <p class="text-sm text-gray-400 leading-relaxed">${lesson.desc}</p>
+                        <p class="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1">${lesson.tool}</p>
+                        <h3 class="text-xl font-bold text-gray-900 leading-snug mb-2 group-hover:text-orange-600 transition-colors">${lesson.title}</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">${lesson.desc}</p>
                     </div>
                     ${mediaHtml}
                     ${resourceButton}
                 `;
-                statusBadge = `<span class="status-badge bg-emerald-900/30 text-emerald-400 border border-emerald-800/50">Activo</span>`;
+                statusBadge = `<span class="status-badge bg-emerald-100 text-emerald-700 border border-emerald-200">Activo</span>`;
             } else {
                 wrapperClass += ' lesson-locked';
                 contentHtml = `
                     <div class="mb-2 opacity-50">
                         <div class="flex items-center gap-2 mb-2">
-                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500 bg-gray-800 px-2 py-0.5 rounded">${lesson.week}</span>
+                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded">${lesson.week}</span>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-300 mb-2">${lesson.title}</h3>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">${lesson.title}</h3>
                         <p class="text-sm text-gray-500">Contenido bloqueado hasta la fecha programada.</p>
                     </div>
                 `;
                 lockOverlay = `
                     <div class="absolute inset-0 z-10 flex items-center justify-center">
-                        <div class="bg-black/80 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-gray-800 flex flex-col items-center">
-                            <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-500 mb-2">
+                        <div class="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-gray-200 flex flex-col items-center">
+                            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-2">
                                 <i class="fa-solid fa-lock"></i>
                             </div>
                             <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Próximamente</span>
@@ -553,7 +554,7 @@
             }
 
             return `
-                <div class="rounded-2xl shadow-md flex flex-col relative overflow-hidden group h-full ${wrapperClass}">
+                <div class="rounded-2xl shadow-sm flex flex-col relative overflow-hidden group h-full ${wrapperClass}">
                     ${lockOverlay}
                     
                     <div class="p-6 flex-1 flex flex-col">
@@ -561,10 +562,6 @@
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-2xl ${style.bg} ${style.color} border ${style.border} flex items-center justify-center text-xl shadow-sm tool-icon-bg transition-transform group-hover:scale-105">
                                     ${iconHtml}
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Herramienta</p>
-                                    <p class="text-sm font-bold text-gray-300">${lesson.tool}</p>
                                 </div>
                             </div>
                             ${statusBadge}
@@ -574,9 +571,9 @@
                     </div>
                     
                     ${lesson.activa ? `
-                    <div class="px-6 py-3 bg-gray-800/50 border-t border-gray-700 flex justify-between items-center mt-auto">
+                    <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center mt-auto">
                         <span class="text-xs font-medium text-gray-500">${typeBadge}</span>
-                        <span class="text-xs font-bold text-orange-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 cursor-pointer">Ir a la lección <i class="fa-solid fa-arrow-right"></i></span>
+                        <span class="text-xs font-bold text-orange-600 group-hover:translate-x-1 transition-transform flex items-center gap-1 cursor-pointer">Ir a la lección <i class="fa-solid fa-arrow-right"></i></span>
                     </div>` : ''}
                 </div>`;
         }
@@ -613,5 +610,3 @@
     </script>
 </body>
 </html>
-
-
