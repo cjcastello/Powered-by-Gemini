@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -21,6 +21,16 @@
         /* Animaciones */
         .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* NUEVO: Animación de Flotación */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
         
         /* Paneles Oscuros Neutros */
         .glass-panel {
@@ -187,10 +197,15 @@
                 <div class="relative bg-black rounded-3xl p-8 md:p-12 mb-10 overflow-hidden shadow-2xl border border-[#3E3E3E]">
                     <div class="absolute top-0 right-0 w-96 h-96 bg-orange-600 rounded-full mix-blend-screen filter blur-[100px] opacity-15 -mr-20 -mt-20"></div>
                     
+                    <!-- Elemento Animado a la Derecha (Icono Gemini Flotante) -->
+                    <div class="absolute right-10 top-1/2 -translate-y-1/2 hidden md:block text-orange-600 opacity-20 animate-float pointer-events-none">
+                        <i class="fa-solid fa-sparkles text-9xl"></i>
+                    </div>
+
                     <div class="relative z-10 max-w-3xl">
                         <span class="inline-block py-1 px-3 rounded-full bg-[#1F1F1F] border border-[#3E3E3E] text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-4" id="current-date">--</span>
-                        <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">Te damos la bienvenida.</h2>
-                        <p class="text-neutral-400 text-lg mb-8 leading-relaxed max-w-2xl">Accede a formaciones intensivas de 30 minutos sobre IA Generativa. Aprende a dominar Gemini y explora las nuevas herramientas que están transformando el trabajo diario.</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">Bienvenida/o.</h2>
+                        <p class="text-neutral-400 text-lg mb-8 leading-relaxed max-w-2xl">Accede a formaciones intensivas de 30 minutos sobre IA Generativa. Aprende a dominar Gemini, explora nuevas herramientas y <strong>¡transforma tu entorno de trabajo con IA!</strong></p>
                         <button onclick="router('lessons')" class="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-orange-900/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-2 inline-flex">
                             Ver Lecciones <i class="fa-solid fa-arrow-right ml-1"></i>
                         </button>
