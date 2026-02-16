@@ -195,7 +195,7 @@
                     <!-- Brillo de fondo sutil -->
                     <div class="absolute top-0 right-0 w-96 h-96 bg-orange-600 rounded-full mix-blend-screen filter blur-[100px] opacity-10 -mr-20 -mt-20"></div>
                     
-                    <!-- Elemento Animado (SVG Destellos Gemini en AZUL - Único elemento azul solicitado) -->
+                    <!-- Elemento Animado (SVG Destellos Gemini en AZUL - Único elemento azul) -->
                     <div class="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block animate-float pointer-events-none">
                         <svg width="180" height="180" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2L14.4 8.4L20.8 10.8L14.4 13.2L12 19.6L9.6 13.2L3.2 10.8L9.6 8.4L12 2Z" fill="#4285F4" fill-opacity="0.9" />
@@ -205,7 +205,7 @@
 
                     <div class="relative z-10 max-w-3xl">
                         <span class="inline-block py-1 px-3 rounded-full bg-[#1F1F1F] border border-[#3E3E3E] text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-4" id="current-date">--</span>
-                        <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">Te damos la bienvenida.</h2>
+                        <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">¡Hola! gracias por unirte.</h2>
                         <p class="text-neutral-400 text-lg mb-8 leading-relaxed max-w-2xl">Accede a formaciones intensivas de 30 minutos sobre IA Generativa. Aprende a dominar Gemini, explora nuevas herramientas y <strong>¡transforma tu entorno de trabajo con IA!</strong></p>
                         <button onclick="router('lessons')" class="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-orange-900/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-2 inline-flex">
                             Ver Lecciones <i class="fa-solid fa-arrow-right ml-1"></i>
@@ -277,6 +277,7 @@
             logoIcon: "FRITTA_NEGRO_sRGB_2.jpg", 
             
             tools: {
+                'Power Up Sessions - 1': { icon: 'fa-solid fa-sparkles', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
                 'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
                 'Google Docs':     { icon: 'fa-solid fa-file-lines', color: 'text-blue-500', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
                 'Google Sheets':   { icon: 'fa-solid fa-table', color: 'text-emerald-400', bg: 'bg-emerald-900/20', border: 'border-emerald-800/30' },
@@ -292,9 +293,9 @@
             {
                 id: 's1',
                 week: 'Semana 1',
-                tool: 'Gemini Advanced',
-                title: 'Fundamentos de la IA en el Trabajo',
-                desc: 'Introducción a Gemini y cómo integrarlo en tu flujo de trabajo diario para ganar 1 hora extra al día.',
+                tool: 'Power Up Sessions - 1',
+                title: 'Flows',
+                desc: 'Flows es una plataforma de automatización que permite crear flujos de trabajo (agentes) conectando diferentes aplicaciones de Google Workspace, como Gmail, Chat, Spaces, Google Calendar, Gemini y Google Forms. Su objetivo es automatizar tareas repetitivas a partir de un evento o una programación.',
                 link: 'https://drive.google.com/file/d/1SWkr-6HDIKjWn-tfl54H8or1JoebO0oz/view?usp=drive_link', 
                 resourceLink: 'https://docs.google.com/presentation/d/1ZG0c3x5uaHXrj-o13D_gBoCTfsJ6xnZl8sBrQeCgn7Y/edit?usp=drive_link',
                 activa: true,
@@ -309,8 +310,7 @@
                 desc: 'Optimiza tu tiempo utilizando Gemini para redactar borradores, responder correos y resumir hilos largos.',
                 link: '', 
                 activa: false,
-                type: 'Práctica',
-                duration: '20 min'
+                type: 'Práctica'
             },
             {
                 id: 's3',
@@ -377,7 +377,7 @@
         function setGreeting() {
             const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('current-date').innerText = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-            document.getElementById('greeting-text').innerText = "Bienvenida/o.";
+            document.getElementById('greeting-text').innerText = "¡Hola! gracias por unirte.";
         }
         
         function renderIcon(iconString, extraClasses = '') {
