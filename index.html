@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -80,7 +80,7 @@
         <div class="flex flex-col items-center justify-center py-8 px-6 border-b border-[#1F1F1F]">
             <div id="logo-icon-container" class="w-32 flex items-center justify-center mb-2"></div>
             <div class="text-center w-full">
-                <h1 class="font-bold text-white text-base tracking-tight" id="app-title-sidebar"></h1>
+                <h1 class="font-bold text-white text-base tracking-tight" id="app-title-sidebar">Powered by Gemini</h1>
                 <p class="text-[10px] text-neutral-500 font-medium uppercase tracking-widest mt-1">Training Platform</p>
             </div>
         </div>
@@ -106,15 +106,21 @@
                 </div>
             </div>
         </nav>
+        
+        <div class="p-6 border-t border-[#1F1F1F] text-center">
+            <p class="text-[10px] text-neutral-600">© 2024 Powered by Fritta</p>
+        </div>
     </aside>
 
     <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-[#1F1F1F]">
         <div class="flex-1 overflow-y-auto p-5 md:p-10 relative scroll-smooth" id="main-container">
             
+            <!-- VISTA: DASHBOARD -->
             <section id="view-dashboard" class="fade-in max-w-7xl mx-auto w-full pb-12">
                 <div class="relative bg-black rounded-3xl p-8 md:p-12 mb-10 overflow-hidden shadow-2xl border border-[#3E3E3E]">
                     <div class="absolute top-0 right-0 w-96 h-96 bg-orange-600 rounded-full mix-blend-screen filter blur-[100px] opacity-10 -mr-20 -mt-20"></div>
                     
+                    <!-- Elemento Animado (Logo Gemini en AZUL) -->
                     <div class="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block animate-float pointer-events-none">
                         <svg width="180" height="180" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2L14.4 8.4L20.8 10.8L14.4 13.2L12 19.6L9.6 13.2L3.2 10.8L9.6 8.4L12 2Z" fill="#4285F4" fill-opacity="0.9" />
@@ -132,8 +138,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12" id="stats-grid">
-                    <!-- Stats se llenan por JS -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
                     <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
                         <div class="w-14 h-14 rounded-full bg-orange-900/10 text-orange-400 border border-orange-800/20 flex items-center justify-center text-2xl"><i class="fa-solid fa-layer-group"></i></div>
                         <div><p class="text-[10px] font-bold text-neutral-500 uppercase">Total</p><h3 class="text-3xl font-bold text-white" id="stat-total">0</h3></div>
@@ -152,6 +157,7 @@
                 <div id="dashboard-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
             </section>
 
+            <!-- VISTA: CATÁLOGO -->
             <section id="view-lessons" class="hidden fade-in max-w-7xl mx-auto w-full pb-12">
                 <div class="mb-10">
                     <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo Completo</h2>
@@ -164,7 +170,6 @@
 
     <script>
         const APP_CONFIG = {
-            appName: "Powered by Gemini",
             logoIcon: "FRITTA_NEGRO_sRGB_2.jpg", 
             tools: {
                 'Power Up Sessions - 1': { icon: 'fa-solid fa-sparkles', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
@@ -185,19 +190,79 @@
                 week: 'Semana 1',
                 tool: 'Power Up Sessions - 1',
                 title: 'Flows',
-                desc: 'Flows es una plataforma de automatización que permite crear flujos de trabajo (agentes) conectando aplicaciones de Google Workspace. Su objetivo es automatizar tareas repetitivas.',
+                desc: 'Flows es una plataforma de automatización que permite crear flujos de trabajo (agentes) conectando diferentes aplicaciones de Google Workspace, como Gmail, Chat, Spaces, Google Calendar, Gemini y Google Forms. Su objetivo es automatizar tareas repetitivas a partir de un evento o una programación.',
                 link: 'https://drive.google.com/file/d/1SWkr-6HDIKjWn-tfl54H8or1JoebO0oz/view?usp=drive_link', 
                 resourceLink: 'https://docs.google.com/presentation/d/1ZG0c3x5uaHXrj-o13D_gBoCTfsJ6xnZl8sBrQeCgn7Y/edit?usp=drive_link',
                 activa: true,
                 type: 'Video',
                 duration: '15 min'
             },
-            { id: 's2', week: 'Semana 2', tool: 'Gmail', title: 'Redacción Inteligente', activa: false, type: 'Práctica', duration: '10 min', desc: 'Optimiza tus correos con Gemini.' },
-            { id: 's3', week: 'Semana 3', tool: 'Google Docs', title: 'Documentos Pro', activa: false, type: 'Taller', duration: '20 min', desc: 'Crea reportes en segundos.' },
-            { id: 's4', week: 'Semana 4', tool: 'Google Sheets', title: 'Análisis IA', activa: false, type: 'Técnico', duration: '30 min', desc: 'Fórmulas mágicas con lenguaje natural.' },
-            { id: 's5', week: 'Semana 5', tool: 'Google Slides', title: 'Presentaciones', activa: false, type: 'Creativo', duration: '15 min', desc: 'Diapositivas de impacto.' },
-            { id: 's6', week: 'Semana 6', tool: 'Google Meet', title: 'Reuniones IA', activa: false, type: 'Video', duration: '10 min', desc: 'Fondos y resúmenes automáticos.' },
-            { id: 's7', week: 'Semana 7', tool: 'Gemini Advanced', title: 'Mastering Prompts', activa: false, type: 'Masterclass', duration: '45 min', desc: 'Ingeniería de prompts avanzada.' }
+            {
+                id: 's2',
+                week: 'Semana 2',
+                tool: 'Gmail',
+                title: 'Redacción Inteligente',
+                desc: 'Optimiza tus correos con Gemini: redacta borradores y resume hilos largos en segundos.',
+                link: '', 
+                activa: false,
+                type: 'Práctica',
+                duration: '10 min'
+            },
+            {
+                id: 's3',
+                week: 'Semana 3',
+                tool: 'Google Docs',
+                title: 'Documentos Pro',
+                desc: 'Genera ideas creativas y estructuras de informes utilizando IA directamente en Docs.',
+                link: '',
+                activa: false,
+                type: 'Taller',
+                duration: '20 min'
+            },
+            {
+                id: 's4',
+                week: 'Semana 4',
+                tool: 'Google Sheets',
+                title: 'Análisis IA',
+                desc: 'Organiza información compleja y genera fórmulas avanzadas con lenguaje natural.',
+                link: '',
+                activa: false,
+                type: 'Técnico',
+                duration: '30 min'
+            },
+            {
+                id: 's5',
+                week: 'Semana 5',
+                tool: 'Google Slides',
+                title: 'Presentaciones Impactantes',
+                desc: 'Crea estructuras para diapositivas e imágenes únicas para tus presentaciones con IA.',
+                link: '',
+                activa: false,
+                type: 'Creativo',
+                duration: '15 min'
+            },
+            {
+                id: 's6',
+                week: 'Semana 6',
+                tool: 'Google Meet',
+                title: 'Reuniones Eficientes',
+                desc: 'Mejora tu presencia con fondos generados por IA y resúmenes automáticos de reuniones.',
+                link: '',
+                activa: false,
+                type: 'Video',
+                duration: '10 min'
+            },
+            {
+                id: 's7',
+                week: 'Semana 7',
+                tool: 'Gemini Advanced',
+                title: 'Mastering Prompts',
+                desc: 'Ingeniería de prompts avanzada para obtener resultados de nivel experto en cualquier tarea.',
+                link: '',
+                activa: false,
+                type: 'Masterclass',
+                duration: '45 min'
+            }
         ];
 
         let lessons = [];
@@ -222,7 +287,6 @@
         }
 
         function applyBranding() {
-            document.getElementById('app-title-sidebar').innerText = "Powered by Gemini";
             document.getElementById('logo-icon-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
         }
 
@@ -242,6 +306,16 @@
             const style = APP_CONFIG.tools[lesson.tool] || APP_CONFIG.defaultTool;
             
             if (lesson.activa) {
+                // LOGICA DEL BOTÓN DE PRESENTACIÓN RESTAURADA
+                let resourceButton = '';
+                if (lesson.resourceLink) {
+                    resourceButton = `
+                        <a href="${lesson.resourceLink}" target="_blank" class="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-black border border-[#3E3E3E] text-orange-500 text-xs font-semibold hover:border-orange-500 transition-all group">
+                            <i class="fa-solid fa-file-powerpoint group-hover:scale-110 transition-transform"></i> Ver Presentación
+                        </a>
+                    `;
+                }
+
                 return `
                     <div class="rounded-2xl lesson-card flex flex-col relative overflow-hidden group h-full p-6">
                         <div class="flex justify-between items-start mb-4">
@@ -255,13 +329,15 @@
                             <h3 class="text-xl font-bold text-white leading-snug mb-2">${lesson.title}</h3>
                             <div class="flex items-center gap-3 mb-3">
                                  <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-400 bg-[#1F1F1F] px-2 py-0.5 rounded border border-[#3E3E3E]">${lesson.week}</span>
-                                 <!-- AQUÍ SE VE EL TYPE Y DURATION -->
                                  <span class="text-[10px] font-bold uppercase text-neutral-500 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${lesson.duration}</span>
                                  <span class="text-[10px] font-bold uppercase text-neutral-500 bg-neutral-800/50 px-2 py-0.5 rounded">${lesson.type}</span>
                             </div>
                             <p class="text-sm text-neutral-400 leading-relaxed">${lesson.desc}</p>
                         </div>
-                        <div class="video-wrapper"><iframe src="https://drive.google.com/file/d/1SWkr-6HDIKjWn-tfl54H8or1JoebO0oz/preview" frameborder="0" allowfullscreen></iframe></div>
+                        <div class="video-wrapper">
+                            <iframe src="https://drive.google.com/file/d/1SWkr-6HDIKjWn-tfl54H8or1JoebO0oz/preview" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        ${resourceButton}
                     </div>`;
             } else {
                 return `
@@ -270,13 +346,22 @@
                             <i class="fa-solid fa-lock text-neutral-500 text-2xl mb-2"></i>
                             <span class="text-[10px] font-bold text-neutral-500 uppercase">Próximamente</span>
                         </div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-neutral-800 text-neutral-600 border border-neutral-700 flex items-center justify-center text-xl">
+                                ${renderIcon(style.icon)}
+                            </div>
+                        </div>
                         <h3 class="text-xl font-bold text-neutral-600 mb-2">${lesson.title}</h3>
-                        <p class="text-xs text-neutral-700 uppercase font-bold">${lesson.week}</p>
+                        <div class="flex items-center gap-3 mb-3">
+                             <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-600 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-800">${lesson.week}</span>
+                             <span class="text-[10px] font-bold uppercase text-neutral-700 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${lesson.duration}</span>
+                        </div>
+                        <p class="text-sm text-neutral-700 leading-relaxed">${lesson.desc}</p>
                     </div>`;
             }
         }
 
-        function renderDashboardList() { document.getElementById('dashboard-list').innerHTML = lessons.slice(0, 2).map(l => createCardHTML(l)).join(''); }
+        function renderDashboardList() { document.getElementById('dashboard-list').innerHTML = lessons.slice(0, 4).map(l => createCardHTML(l)).join(''); }
         function renderFullList() { document.getElementById('lessons-grid').innerHTML = lessons.map(l => createCardHTML(l)).join(''); }
         function updateStats() {
             const activeCount = lessons.filter(l => l.activa).length;
