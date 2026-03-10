@@ -322,7 +322,7 @@
         // Exponer funciones globales al objeto window para el HTML
         window.router = router;
         
-        // --- NUEVA FUNCIÓN: Iniciar lección específica ---
+        // --- NUEVA FUNCIÓN: Iniciar lección específica con respuesta visual instantánea ---
         window.startLesson = async function(lessonId, iframeLink) {
             // 1. Mostrar el vídeo quitando el placeholder
             const container = document.getElementById(`video-container-${lessonId}`);
@@ -332,7 +332,29 @@
                 container.onclick = null; // Evitar que se pulse repetidas veces
             }
 
-            // 2. Registrar la visualización única en Firebase SOLO para esta lección
+            // 2. ACTUALIZACIÓN VISUAL INMEDIATA (Para que veas el 1 al instante)
+            if (!sessionViews[lessonId]) {
+                sessionViews[lessonId] = { count: 0, seenByMe: false };
+            }
+            
+            // Si es la primera vez que hacemos clic, sumamos y cambiamos el estilo al instante
+            if (!sessionViews[lessonId].seenByMe) {
+                sessionViews[lessonId].count++;
+                sessionViews[lessonId].seenByMe = true;
+                
+                // Actualizar contador en pantalla
+                document.querySelectorAll(`.counter-val-${lessonId}`).forEach(el => el.innerText = sessionViews[lessonId].count);
+                
+                // Poner la etiqueta de color naranja
+                document.querySelectorAll(`.counter-container-${lessonId}`).forEach(el => {
+                    const icon = el.querySelector(`.counter-icon-${lessonId}`);
+                    el.className = `counter-container-${lessonId} flex items-center gap-1.5 text-[11px] font-bold text-orange-500 bg-orange-900/20 border border-orange-800/30 px-2.5 py-1 rounded-lg shadow-sm transition-colors`;
+                    el.title = "Visto por ti";
+                    if (icon) icon.className = `fa-solid fa-eye counter-icon-${lessonId}`;
+                });
+            }
+
+            // 3. Registrar la visualización única en Firebase por detrás
             if (currentUser && db) {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'session_views', lessonId);
                 try {
@@ -352,7 +374,6 @@
             setGreeting();
             router('dashboard');
             
-            // Adjuntar los eventos de búsqueda por JS en lugar de hacerlo en el HTML
             const searchInput = document.getElementById('search-input');
             if (searchInput) searchInput.addEventListener('input', renderFullList); 
             
@@ -406,25 +427,21 @@
                     const data = docSnap.data();
                     const viewers = data.viewers || [];
                     const count = viewers.length;
-                    const seenByMe = viewers.includes(currentUser.uid); // Comprobar si mi usuario está en la base de datos
+                    const seenByMe = viewers.includes(currentUser.uid);
                     
                     sessionViews[docSnap.id] = { count, seenByMe };
                     
-                    // Actualizar números en el DOM
                     const counterEls = document.querySelectorAll(`.counter-val-${docSnap.id}`);
                     counterEls.forEach(el => el.innerText = count);
 
-                    // Actualizar estilos del contenedor del ojo en el DOM
                     const containerEls = document.querySelectorAll(`.counter-container-${docSnap.id}`);
                     containerEls.forEach(el => {
                         const icon = el.querySelector(`.counter-icon-${docSnap.id}`);
                         if (seenByMe) {
-                            // Estilo Naranja: Indica que este usuario ya lo vio
                             el.className = `counter-container-${docSnap.id} flex items-center gap-1.5 text-[11px] font-bold text-orange-500 bg-orange-900/20 border border-orange-800/30 px-2.5 py-1 rounded-lg shadow-sm transition-colors`;
                             el.title = "Visto por ti";
                             if (icon) icon.className = `fa-solid fa-eye counter-icon-${docSnap.id}`;
                         } else {
-                            // Estilo Gris: Vistas por otros, pero no por mí
                             el.className = `counter-container-${docSnap.id} flex items-center gap-1.5 text-[11px] font-bold text-neutral-400 bg-[#1F1F1F] border border-[#3E3E3E] px-2.5 py-1 rounded-lg shadow-sm transition-colors`;
                             el.title = "Vistas únicas";
                             if (icon) icon.className = `fa-regular fa-eye counter-icon-${docSnap.id}`;
@@ -463,11 +480,6 @@
             if (viewName === 'lessons') renderFullList(); 
             if (viewName === 'dashboard') renderDashboardList();
         }
-        
-        function toggleMobileMenu() { 
-            const menu = document.getElementById('mobile-menu');
-            if (menu) menu.classList.toggle('hidden'); 
-        }
 
         function createCardHTML(lesson) {
             const style = APP_CONFIG.tools[lesson.tool] || APP_CONFIG.defaultTool;
@@ -485,10 +497,9 @@
 
                 let iframeLink = lesson.link ? lesson.link.replace('/view?usp=drive_link', '/preview') : '';
                 
-                // Obtener datos si existen, sino predeterminar vacío
-                const viewsData = sessionViews[lesson.id] || { count: '...', seenByMe: false };
+                // Empezar en 0 en lugar de '...' si la base de datos no está conectada
+                const viewsData = sessionViews[lesson.id] || { count: 0, seenByMe: false };
                 
-                // Generar las clases iniciales según si el usuario ya lo vio o no
                 const containerClass = viewsData.seenByMe 
                     ? 'text-orange-500 bg-orange-900/20 border-orange-800/30' 
                     : 'text-neutral-400 bg-[#1F1F1F] border-[#3E3E3E]';
@@ -504,7 +515,7 @@
                             <div class="flex flex-col items-end gap-2">
                                 <span class="status-badge bg-emerald-900/30 text-emerald-400 border border-emerald-800/50">Activa</span>
                                 
-                                <!-- CONTADOR DE VISITAS ÚNICAS (Color y título dinámico) -->
+                                <!-- CONTADOR DE VISITAS ÚNICAS -->
                                 <div class="counter-container-${lesson.id} flex items-center gap-1.5 text-[11px] font-bold ${containerClass} border px-2.5 py-1 rounded-lg shadow-sm transition-colors" title="${eyeTitle}">
                                     <i class="${eyeClass} fa-eye counter-icon-${lesson.id}"></i>
                                     <span class="counter-val-${lesson.id}">${viewsData.count}</span>
