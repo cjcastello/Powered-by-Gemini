@@ -45,6 +45,7 @@
             border-radius: 12px;
             margin-top: 1rem;
             background: #000;
+            border: 1px solid #3E3E3E;
         }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
@@ -159,20 +160,42 @@
 
             <!-- VISTA: CATÁLOGO -->
             <section id="view-lessons" class="hidden fade-in max-w-7xl mx-auto w-full pb-12">
-                <div class="mb-10">
-                    <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo Completo</h2>
-                    <p class="text-neutral-500 mt-2 text-lg">Las 7 sesiones programadas para tu equipo.</p>
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo Completo</h2>
+                        <p class="text-neutral-500 mt-2 text-lg">Las 7 sesiones programadas para tu equipo.</p>
+                    </div>
+                     <div class="flex gap-3 bg-[#292929] p-1.5 rounded-xl border border-[#3E3E3E] shadow-sm w-full md:w-auto">
+                        <div class="relative flex-1 md:flex-none">
+                            <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-neutral-400 text-sm"></i>
+                            <input type="text" id="search-input" placeholder="Buscar..." class="pl-10 pr-4 py-2.5 bg-transparent text-sm focus:outline-none w-full md:w-64 text-neutral-300 placeholder-neutral-500">
+                        </div>
+                        <select id="filter-tool" class="px-3 py-2.5 bg-transparent text-sm focus:outline-none text-neutral-400 font-medium cursor-pointer hover:text-white bg-[#1F1F1F] rounded-lg">
+                            <option value="all">Todas</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
             </section>
         </div>
     </main>
 
-    <script>
+    <!-- LÓGICA Y CONEXIÓN CON BASE DE DATOS (FIRESTORE) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         const APP_CONFIG = {
             logoIcon: "FRITTA_NEGRO_sRGB_2.jpg", 
             tools: {
-                'Power Up Sessions - 1': { icon: 'fa-solid fa-bolt-lightning', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 1': { icon: 'fa-solid fa-diagram-project', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 2': { icon: 'fa-solid fa-book-open-reader', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 3': { icon: 'fa-solid fa-magnifying-glass-chart', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 4': { icon: 'fa-solid fa-chalkboard-user', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 5': { icon: 'fa-solid fa-video', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 6': { icon: 'fa-solid fa-terminal', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 7': { icon: 'fa-solid fa-brain', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
                 'Gemini Advanced': { icon: 'fa-solid fa-wand-magic-sparkles', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
                 'Google Docs':     { icon: 'fa-solid fa-file-lines', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
                 'Google Sheets':   { icon: 'fa-solid fa-table', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
@@ -279,13 +302,117 @@
         ];
 
         let lessons = [];
+        
+        // --- CONFIGURACIÓN DE BASE DE DATOS PARA USUARIOS ÚNICOS ---
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        let firebaseConfig = null;
+        try { firebaseConfig = firebaseConfigStr ? JSON.parse(firebaseConfigStr) : null; } catch(e) {}
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'learninghub-fritta';
+        
+        let app, auth, db, currentUser;
+        let sessionViews = {};
+
+        if (firebaseConfig) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        }
+
+        // Exponer funciones globales al objeto window para el HTML
+        window.router = router;
+        
+        // --- NUEVA FUNCIÓN: Iniciar lección específica ---
+        window.startLesson = async function(lessonId, iframeLink) {
+            // 1. Mostrar el vídeo
+            const container = document.getElementById(`video-container-${lessonId}`);
+            if (container) {
+                container.innerHTML = `<iframe src="${iframeLink}" frameborder="0" allowfullscreen></iframe>`;
+            }
+
+            // 2. Registrar la visualización única en Firebase SOLO para esta lección
+            if (currentUser && db) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'session_views', lessonId);
+                try {
+                    await setDoc(docRef, {
+                        viewers: arrayUnion(currentUser.uid)
+                    }, { merge: true });
+                } catch (e) {
+                    console.error("Error registrando vista independiente:", e);
+                }
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', () => { 
             applyBranding(); 
+            populateToolSelectors();
             loadData(); 
             setGreeting();
             router('dashboard');
+            
+            // Adjuntar los eventos de búsqueda por JS en lugar de hacerlo en el HTML
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.addEventListener('input', renderFullList); // 'input' detecta los cambios más fluidamente
+            
+            const filterTool = document.getElementById('filter-tool');
+            if (filterTool) filterTool.addEventListener('change', renderFullList);
+
+            if (auth) {
+                initAuth();
+            }
         });
+
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        setupRealtimeCounters();
+                        // Eliminamos la función recordUniqueVisit() global de aquí 
+                        // para que no sume en TODAS las sesiones al entrar
+                    } else {
+                        currentUser = null;
+                    }
+                });
+            } catch (e) {
+                console.error("Auth error:", e);
+            }
+        }
+
+        function populateToolSelectors() {
+            const filter = document.getElementById('filter-tool');
+            if (filter) {
+                Object.keys(APP_CONFIG.tools).forEach(toolName => {
+                    const opt = document.createElement('option');
+                    opt.value = toolName;
+                    opt.innerText = toolName;
+                    filter.appendChild(opt);
+                });
+            }
+        }
+
+        function setupRealtimeCounters() {
+            if (!currentUser || !db) return;
+            const viewsRef = collection(db, 'artifacts', appId, 'public', 'data', 'session_views');
+            
+            onSnapshot(viewsRef, (snapshot) => {
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    sessionViews[docSnap.id] = data.viewers ? data.viewers.length : 0;
+                    
+                    const counterEls = document.querySelectorAll(`.counter-val-${docSnap.id}`);
+                    counterEls.forEach(el => el.innerText = sessionViews[docSnap.id]);
+                });
+            }, (error) => {
+                console.error("Error al leer visitas:", error);
+            });
+        }
 
         function setGreeting() {
             const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -330,9 +457,7 @@
                 }
 
                 let iframeLink = lesson.link ? lesson.link.replace('/view?usp=drive_link', '/preview') : '';
-                
-                // Nuevo proveedor de contador de visitas (api.visitorbadge.io) que es más compatible
-                const badgeUrl = `https://api.visitorbadge.io/api/visitors?path=learninghub.fritta.session.${lesson.id}&label=Visitas&labelColor=%231F1F1F&countColor=%23F97316`;
+                const viewCount = sessionViews[lesson.id] !== undefined ? sessionViews[lesson.id] : '...';
 
                 return `
                     <div class="rounded-2xl lesson-card flex flex-col relative overflow-hidden group h-full p-6">
@@ -342,8 +467,10 @@
                             </div>
                             <div class="flex flex-col items-end gap-2">
                                 <span class="status-badge bg-emerald-900/30 text-emerald-400 border border-emerald-800/50">Activa</span>
-                                <!-- Contador de visitas con fallback para que no muestre imagen rota si falla -->
-                                <img src="${badgeUrl}" alt="Visitas" class="h-[20px] opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.style.display='none'">
+                                <div class="flex items-center gap-1.5 text-[11px] font-bold text-orange-400 bg-[#1F1F1F] border border-[#3E3E3E] px-2.5 py-1 rounded-lg shadow-sm" title="Vistas únicas">
+                                    <i class="fa-regular fa-eye"></i>
+                                    <span class="counter-val-${lesson.id}">${viewCount}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="mb-4">
@@ -356,9 +483,17 @@
                             </div>
                             <p class="text-sm text-neutral-400 leading-relaxed">${lesson.desc}</p>
                         </div>
-                        <div class="video-wrapper">
-                            <iframe src="${iframeLink}" frameborder="0" allowfullscreen></iframe>
+                        
+                        <!-- NUEVO: Placeholder para cargar el vídeo solo bajo demanda -->
+                        <div class="video-wrapper group/play cursor-pointer" id="video-container-${lesson.id}" onclick="startLesson('${lesson.id}', '${iframeLink}')">
+                            <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover/play:bg-black/40 transition-colors z-10">
+                                <div class="w-14 h-14 rounded-full bg-orange-600 flex items-center justify-center mb-3 shadow-lg group-hover/play:scale-110 transition-transform">
+                                    <i class="fa-solid fa-play text-white ml-1 text-xl"></i>
+                                </div>
+                                <span class="text-white text-xs font-bold uppercase tracking-wider">Ver Sesión</span>
+                            </div>
                         </div>
+                        
                         ${resourceButton}
                     </div>`;
             } else {
@@ -370,7 +505,7 @@
                         </div>
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-12 h-12 rounded-2xl bg-neutral-800 text-neutral-600 border border-neutral-700 flex items-center justify-center text-xl">
-                                ${renderIcon(style.icon)}
+                                ${renderIcon(iconToRender)}
                             </div>
                         </div>
                         <h3 class="text-xl font-bold text-neutral-600 mb-2">${lesson.title}</h3>
@@ -384,7 +519,26 @@
         }
 
         function renderDashboardList() { document.getElementById('dashboard-list').innerHTML = lessons.slice(0, 4).map(l => createCardHTML(l)).join(''); }
-        function renderFullList() { document.getElementById('lessons-grid').innerHTML = lessons.map(l => createCardHTML(l)).join(''); }
+        
+        function renderFullList() {
+            const searchInput = document.getElementById('search-input');
+            const filterTool = document.getElementById('filter-tool');
+            
+            const search = searchInput ? searchInput.value.toLowerCase() : ''; 
+            const filterValue = filterTool ? filterTool.value : 'all';
+            
+            const filtered = lessons.filter(l => { 
+                const matchSearch = l.title.toLowerCase().includes(search) || l.desc.toLowerCase().includes(search); 
+                const matchTool = filterValue === 'all' || l.tool === filterValue; 
+                return matchSearch && matchTool; 
+            });
+            
+            const grid = document.getElementById('lessons-grid');
+            if (grid) {
+                grid.innerHTML = filtered.length ? filtered.map(l => createCardHTML(l)).join('') : `<div class="col-span-full text-center py-10 text-slate-500">Sin resultados.</div>`;
+            }
+        }
+        
         function updateStats() {
             const activeCount = lessons.filter(l => l.activa).length;
             document.getElementById('stat-total').innerText = lessons.length;
@@ -394,7 +548,6 @@
             document.getElementById('progress-bar-sidebar').style.width = `${progress}%`; 
             document.getElementById('progress-text-sidebar').innerText = `${progress}%`;
         }
-        window.router = router;
     </script>
 </body>
 </html>
