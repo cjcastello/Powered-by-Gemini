@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,52 +7,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- GOOGLE ANALYTICS PLACEHOLDER -->
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #000000; 
-            color: #E5E5E5; /* Texto Gris Neutro */
+            color: #E5E5E5; 
         }
         
-        /* Animaciones */
         .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
         
-        /* Animación de Flotación suave */
         @keyframes float {
             0% { transform: translateY(0px) scale(1); opacity: 0.5; }
             50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
             100% { transform: translateY(0px) scale(1); opacity: 0.5; }
         }
-        .animate-float {
-            animation: float 5s ease-in-out infinite;
-        }
+        .animate-float { animation: float 5s ease-in-out infinite; }
         
-        /* Paneles Oscuros Neutros */
         .glass-panel {
-            background: #292929; /* Gris Tarjeta */
-            border: 1px solid #3E3E3E; /* Borde sutil */
+            background: #292929;
+            border: 1px solid #3E3E3E;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
         
-        /* Barra Lateral Negra */
         .sidebar-bg {
             background-color: #000000;
             border-right: 1px solid #1F1F1F;
         }
 
-        /* Scrollbar Neutro */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #1F1F1F; }
-        ::-webkit-scrollbar-thumb { background: #404040; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #525252; }
-
-        .icon-img-fit { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
-        
         .video-wrapper {
             position: relative;
             padding-bottom: 56.25%;
@@ -60,38 +44,20 @@
             overflow: hidden;
             border-radius: 12px;
             margin-top: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
             background: #000;
         }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* Tarjetas de Lección */
         .lesson-card { 
             background-color: #292929; 
             border: 1px solid #3E3E3E; 
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-        .lesson-card:hover {
-            border-color: #F97316; /* Naranja Fritta */
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.4);
-        }
+        .lesson-card:hover { border-color: #F97316; transform: translateY(-2px); }
 
         .lesson-locked { opacity: 0.5; position: relative; overflow: hidden; pointer-events: none; }
-        .lesson-locked::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(30, 30, 30, 0.7);
-            backdrop-filter: grayscale(1) blur(1px);
-            z-index: 5;
-        }
         
-        /* Navegación Sidebar */
-        .nav-item { position: relative; transition: all 0.2s ease; color: #A3A3A3; }
-        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.1); }
-        
+        .nav-item { transition: all 0.2s ease; color: #A3A3A3; }
         .nav-active { 
             background: #1F1F1F; 
             color: #F97316 !important; 
@@ -104,98 +70,51 @@
             padding: 3px 8px; 
             border-radius: 4px; 
             font-weight: 700; 
-            letter-spacing: 0.05em;
             text-transform: uppercase;
         }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-black text-neutral-100">
 
-    <!-- Sidebar Negra (Izquierda) -->
     <aside class="w-[280px] sidebar-bg flex flex-col hidden md:flex shadow-2xl z-30">
-        
-        <!-- Logo Integrado -->
         <div class="flex flex-col items-center justify-center py-8 px-6 border-b border-[#1F1F1F]">
             <div id="logo-icon-container" class="w-32 flex items-center justify-center mb-2"></div>
-            
             <div class="text-center w-full">
-                <h1 class="font-bold text-white text-base tracking-tight leading-snug" id="app-title-sidebar"></h1>
+                <h1 class="font-bold text-white text-base tracking-tight" id="app-title-sidebar"></h1>
                 <p class="text-[10px] text-neutral-500 font-medium uppercase tracking-widest mt-1">Training Platform</p>
             </div>
         </div>
 
-        <!-- Navegación -->
         <nav class="flex-1 px-4 py-6 space-y-1">
-            <p class="px-4 text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-3">Menú</p>
-            
             <button onclick="router('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 text-sm rounded-lg">
                 <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
             </button>
             <button onclick="router('lessons')" id="nav-lessons" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 text-sm rounded-lg">
                 <i class="fa-solid fa-layer-group w-5 text-center"></i> Catálogo
             </button>
-
-            <!-- Progreso -->
             <div class="mt-8 pt-6 border-t border-[#1F1F1F]">
-                <p class="px-4 text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-3">Tu Avance</p>
                 <div class="px-4">
                     <div class="bg-[#1F1F1F] rounded-xl p-4 border border-[#3E3E3E]">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-medium text-neutral-400">Completado</span>
+                            <span class="text-xs font-medium text-neutral-400">Progreso</span>
                             <span class="text-xs font-bold text-orange-500" id="progress-text-sidebar">0%</span>
                         </div>
                         <div class="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
-                            <div class="bg-orange-600 h-full rounded-full transition-all duration-700 ease-out" style="width: 0%" id="progress-bar-sidebar"></div>
+                            <div class="bg-orange-600 h-full rounded-full transition-all duration-700" style="width: 0%" id="progress-bar-sidebar"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Admin (Oculto) -->
-            <button onclick="router('add')" id="nav-add" class="hidden mt-4 nav-item w-full flex items-center gap-3 px-4 py-3 text-sm rounded-lg">
-                <i class="fa-solid fa-lock w-5 text-center"></i> Admin
-            </button>
         </nav>
-
-        <!-- Footer -->
-        <div class="p-6 border-t border-[#1F1F1F] text-center">
-            <p class="text-[10px] text-neutral-600">© 2024 Powered by Fritta</p>
-        </div>
     </aside>
 
-    <!-- Main Content (Derecha) -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-[#1F1F1F]">
-        
-        <!-- Mobile Header -->
-        <header class="md:hidden bg-black border-b border-[#3E3E3E] p-4 flex justify-between items-center text-white z-40">
-            <div class="flex items-center gap-3">
-                <div id="mobile-logo-container" class="w-8 h-8 flex items-center justify-center overflow-hidden"></div>
-                <span class="font-bold text-sm tracking-tight" id="app-title-mobile">App</span>
-            </div>
-            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-neutral-400 hover:text-white">
-                <i class="fa-solid fa-bars text-xl"></i>
-            </button>
-        </header>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden absolute top-[60px] left-0 w-full bg-[#1F1F1F] shadow-2xl border-b border-[#3E3E3E] z-50 md:hidden">
-            <nav class="p-4 space-y-2">
-                <button onclick="router('dashboard'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg text-neutral-300 hover:bg-black">Dashboard</button>
-                <button onclick="router('lessons'); toggleMobileMenu()" class="w-full text-left p-3 rounded-lg text-neutral-300 hover:bg-black">Catálogo</button>
-            </nav>
-        </div>
-
         <div class="flex-1 overflow-y-auto p-5 md:p-10 relative scroll-smooth" id="main-container">
             
-            <!-- VIEW: DASHBOARD -->
             <section id="view-dashboard" class="fade-in max-w-7xl mx-auto w-full pb-12">
-                
-                <!-- Hero Section: Fondo Negro -->
                 <div class="relative bg-black rounded-3xl p-8 md:p-12 mb-10 overflow-hidden shadow-2xl border border-[#3E3E3E]">
-                    <!-- Brillo de fondo sutil -->
                     <div class="absolute top-0 right-0 w-96 h-96 bg-orange-600 rounded-full mix-blend-screen filter blur-[100px] opacity-10 -mr-20 -mt-20"></div>
                     
-                    <!-- Elemento Animado (SVG Destellos Gemini en AZUL - Único elemento azul) -->
                     <div class="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block animate-float pointer-events-none">
                         <svg width="180" height="180" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2L14.4 8.4L20.8 10.8L14.4 13.2L12 19.6L9.6 13.2L3.2 10.8L9.6 8.4L12 2Z" fill="#4285F4" fill-opacity="0.9" />
@@ -206,64 +125,37 @@
                     <div class="relative z-10 max-w-3xl">
                         <span class="inline-block py-1 px-3 rounded-full bg-[#1F1F1F] border border-[#3E3E3E] text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-4" id="current-date">--</span>
                         <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight" id="greeting-text">¡Hola! gracias por unirte.</h2>
-                        <p class="text-neutral-400 text-lg mb-8 leading-relaxed max-w-2xl">Accede a formaciones intensivas de 30 minutos sobre IA Generativa. Aprende a dominar Gemini, explora nuevas herramientas y <strong>¡transforma tu entorno de trabajo con IA!</strong></p>
-                        <button onclick="router('lessons')" class="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-orange-900/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-2 inline-flex">
+                        <p class="text-neutral-400 text-lg mb-8 leading-relaxed max-w-2xl">Accede a formaciones intensivas sobre IA Generativa. Aprende a dominar Gemini, explora nuevas herramientas y <strong>¡transforma tu entorno de trabajo con IA!</strong></p>
+                        <button onclick="router('lessons')" class="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-2 inline-flex">
                             Ver Lecciones <i class="fa-solid fa-arrow-right ml-1"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Stats Overview -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12" id="stats-grid">
+                    <!-- Stats se llenan por JS -->
                     <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
                         <div class="w-14 h-14 rounded-full bg-orange-900/10 text-orange-400 border border-orange-800/20 flex items-center justify-center text-2xl"><i class="fa-solid fa-layer-group"></i></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Total</p>
-                            <h3 class="text-3xl font-bold text-white" id="stat-total">0</h3>
-                        </div>
+                        <div><p class="text-[10px] font-bold text-neutral-500 uppercase">Total</p><h3 class="text-3xl font-bold text-white" id="stat-total">0</h3></div>
                     </div>
                     <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
                         <div class="w-14 h-14 rounded-full bg-emerald-900/10 text-emerald-400 border border-emerald-800/20 flex items-center justify-center text-2xl"><i class="fa-solid fa-unlock"></i></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Activas</p>
-                            <h3 class="text-3xl font-bold text-white" id="stat-active">0</h3>
-                        </div>
+                        <div><p class="text-[10px] font-bold text-neutral-500 uppercase">Activas</p><h3 class="text-3xl font-bold text-white" id="stat-active">0</h3></div>
                     </div>
                     <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
                         <div class="w-14 h-14 rounded-full bg-neutral-800 text-neutral-500 border border-neutral-700 flex items-center justify-center text-2xl"><i class="fa-solid fa-lock"></i></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Bloqueadas</p>
-                            <h3 class="text-3xl font-bold text-white" id="stat-locked">0</h3>
-                        </div>
+                        <div><p class="text-[10px] font-bold text-neutral-500 uppercase">Bloqueadas</p><h3 class="text-3xl font-bold text-white" id="stat-locked">0</h3></div>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-end mb-6 border-b border-[#3E3E3E] pb-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-white">Sesiones Destacadas</h3>
-                        <p class="text-neutral-500 text-sm mt-1">Acceso directo a tu contenido.</p>
-                    </div>
-                </div>
-                
+                <h3 class="text-xl font-bold text-white mb-6">Sesiones Destacadas</h3>
                 <div id="dashboard-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
             </section>
 
-            <!-- VIEW: CATALOG -->
             <section id="view-lessons" class="hidden fade-in max-w-7xl mx-auto w-full pb-12">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-                    <div>
-                        <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo Completo</h2>
-                        <p class="text-neutral-500 mt-2 text-lg">Las 7 sesiones programadas para tu equipo.</p>
-                    </div>
-                    <div class="flex gap-3 bg-[#292929] p-1.5 rounded-xl border border-[#3E3E3E] shadow-sm w-full md:w-auto">
-                        <div class="relative flex-1 md:flex-none">
-                            <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-neutral-400 text-sm"></i>
-                            <input type="text" id="search-input" onkeyup="filterLessons()" placeholder="Buscar..." class="pl-10 pr-4 py-2.5 bg-transparent text-sm focus:outline-none w-full md:w-64 text-neutral-300 placeholder-neutral-500">
-                        </div>
-                        <select id="filter-tool" onchange="filterLessons()" class="px-3 py-2.5 bg-transparent text-sm focus:outline-none text-neutral-400 font-medium cursor-pointer hover:text-white bg-[#1F1F1F] rounded-lg">
-                            <option value="all">Todas</option>
-                        </select>
-                    </div>
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo Completo</h2>
+                    <p class="text-neutral-500 mt-2 text-lg">Las 7 sesiones programadas para tu equipo.</p>
                 </div>
                 <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
             </section>
@@ -273,9 +165,7 @@
     <script>
         const APP_CONFIG = {
             appName: "Powered by Gemini",
-            pageTitle: "Formación Fritta",
             logoIcon: "FRITTA_NEGRO_sRGB_2.jpg", 
-            
             tools: {
                 'Power Up Sessions - 1': { icon: 'fa-solid fa-sparkles', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
                 'Gemini Advanced': { icon: 'fa-solid fa-sparkles', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-800/30' },
@@ -295,80 +185,25 @@
                 week: 'Semana 1',
                 tool: 'Power Up Sessions - 1',
                 title: 'Flows',
-                desc: 'Flows es una plataforma de automatización que permite crear flujos de trabajo (agentes) conectando diferentes aplicaciones de Google Workspace, como Gmail, Chat, Spaces, Google Calendar, Gemini y Google Forms. Su objetivo es automatizar tareas repetitivas a partir de un evento o una programación.',
+                desc: 'Flows es una plataforma de automatización que permite crear flujos de trabajo (agentes) conectando aplicaciones de Google Workspace. Su objetivo es automatizar tareas repetitivas.',
                 link: 'https://drive.google.com/file/d/1SWkr-6HDIKjWn-tfl54H8or1JoebO0oz/view?usp=drive_link', 
                 resourceLink: 'https://docs.google.com/presentation/d/1ZG0c3x5uaHXrj-o13D_gBoCTfsJ6xnZl8sBrQeCgn7Y/edit?usp=drive_link',
                 activa: true,
                 type: 'Video',
                 duration: '15 min'
             },
-            {
-                id: 's2',
-                week: 'Semana 2',
-                tool: 'Gmail',
-                title: 'Redacción de Correos Inteligente',
-                desc: 'Optimiza tu tiempo utilizando Gemini para redactar borradores, responder correos y resumir hilos largos.',
-                link: '', 
-                activa: false,
-                type: 'Práctica'
-            },
-            {
-                id: 's3',
-                week: 'Semana 3',
-                tool: 'Google Docs',
-                title: 'Creación de Documentos y Reportes',
-                desc: 'Genera ideas creativas, estructuras de informes y resume textos extensos en segundos.',
-                link: '',
-                activa: false,
-                type: 'Taller'
-            },
-            {
-                id: 's4',
-                week: 'Semana 4',
-                tool: 'Google Sheets',
-                title: 'Análisis de Datos y Fórmulas',
-                desc: 'Organiza información compleja y genera fórmulas avanzadas simplemente describiendo lo que necesitas.',
-                link: '',
-                activa: false,
-                type: 'Técnico'
-            },
-            {
-                id: 's5',
-                week: 'Semana 5',
-                tool: 'Google Slides',
-                title: 'Presentaciones Impactantes',
-                desc: 'Crea estructuras para diapositivas y genera imágenes únicas para tus presentaciones con IA.',
-                link: '',
-                activa: false,
-                type: 'Creativo'
-            },
-            {
-                id: 's6',
-                week: 'Semana 6',
-                tool: 'Google Meet',
-                title: 'Reuniones Eficientes',
-                desc: 'Mejora tu presencia con fondos generados por IA y optimización de audio y video en tiempo real.',
-                link: '',
-                activa: false,
-                type: 'Video'
-            },
-            {
-                id: 's7',
-                week: 'Semana 7',
-                tool: 'Gemini Advanced',
-                title: 'Prompt Engineering Avanzado',
-                desc: 'Aprende la ciencia de pedir las cosas correctamente para obtener resultados de nivel experto.',
-                link: '',
-                activa: false,
-                type: 'Masterclass'
-            }
+            { id: 's2', week: 'Semana 2', tool: 'Gmail', title: 'Redacción Inteligente', activa: false, type: 'Práctica', duration: '10 min', desc: 'Optimiza tus correos con Gemini.' },
+            { id: 's3', week: 'Semana 3', tool: 'Google Docs', title: 'Documentos Pro', activa: false, type: 'Taller', duration: '20 min', desc: 'Crea reportes en segundos.' },
+            { id: 's4', week: 'Semana 4', tool: 'Google Sheets', title: 'Análisis IA', activa: false, type: 'Técnico', duration: '30 min', desc: 'Fórmulas mágicas con lenguaje natural.' },
+            { id: 's5', week: 'Semana 5', tool: 'Google Slides', title: 'Presentaciones', activa: false, type: 'Creativo', duration: '15 min', desc: 'Diapositivas de impacto.' },
+            { id: 's6', week: 'Semana 6', tool: 'Google Meet', title: 'Reuniones IA', activa: false, type: 'Video', duration: '10 min', desc: 'Fondos y resúmenes automáticos.' },
+            { id: 's7', week: 'Semana 7', tool: 'Gemini Advanced', title: 'Mastering Prompts', activa: false, type: 'Masterclass', duration: '45 min', desc: 'Ingeniería de prompts avanzada.' }
         ];
 
         let lessons = [];
 
         document.addEventListener('DOMContentLoaded', () => { 
             applyBranding(); 
-            populateToolSelectors(); 
             loadData(); 
             setGreeting();
             router('dashboard');
@@ -382,123 +217,70 @@
         
         function renderIcon(iconString, extraClasses = '') {
             const isImage = iconString.includes('.') || iconString.includes('/') || iconString.startsWith('http');
-            if (isImage) return `<img src="${iconString}" class="icon-img-fit ${extraClasses}" alt="Logo">`;
+            if (isImage) return `<img src="${iconString}" class="w-full h-full object-contain ${extraClasses}" alt="Logo">`;
             return `<i class="${iconString} ${extraClasses}"></i>`;
         }
 
-        function getMediaEmbed(link) {
-            if (!link) return '';
-            const driveRegex = /drive\.google\.com\/file\/d\/([^\/]+)/;
-            const driveMatch = link.match(driveRegex);
-            if (driveMatch && driveMatch[1]) {
-                 return `
-                    <div class="video-wrapper">
-                        <iframe src="https://drive.google.com/file/d/${driveMatch[1]}/preview" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                    <div class="mt-3 text-center">
-                        <a href="${link}" target="_blank" class="text-[10px] text-orange-500 hover:text-orange-400 underline uppercase font-bold tracking-widest">¿No ves el vídeo? Abrir en Drive</a>
-                    </div>`;
-            }
-            return `<a href="${link}" target="_blank" class="mt-4 flex items-center justify-between px-4 py-3 rounded-xl bg-[#1F1F1F] border border-[#3E3E3E] text-neutral-300 font-medium text-sm hover:border-orange-500 transition-all group">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-link"></i> Abrir Recurso</span>
-                <i class="fa-solid fa-chevron-right text-xs opacity-50 group-hover:translate-x-1 transition-transform"></i>
-            </a>`;
-        }
-
         function applyBranding() {
-            document.getElementById('app-title-sidebar').innerText = APP_CONFIG.appName;
+            document.getElementById('app-title-sidebar').innerText = "Powered by Gemini";
             document.getElementById('logo-icon-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
-            document.getElementById('mobile-logo-container').innerHTML = renderIcon(APP_CONFIG.logoIcon);
-            document.getElementById('app-title-mobile').innerText = APP_CONFIG.appName;
-        }
-
-        function populateToolSelectors() {
-            const filter = document.getElementById('filter-tool');
-            Object.keys(APP_CONFIG.tools).forEach(toolName => {
-                const opt = document.createElement('option'); opt.value = toolName; opt.innerText = toolName; filter.appendChild(opt);
-            });
         }
 
         function loadData() { lessons = [...PLAN_DE_ESTUDIOS]; updateStats(); }
 
         function router(viewName) {
             document.querySelectorAll('section[id^="view-"]').forEach(el => el.classList.add('hidden'));
-            const target = document.getElementById(`view-${viewName}`);
-            if(target) target.classList.remove('hidden');
-            
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('nav-active'));
             const activeNav = document.getElementById(`nav-${viewName}`);
             if(activeNav) activeNav.classList.add('nav-active');
-            
             if (viewName === 'lessons') renderFullList(); 
             if (viewName === 'dashboard') renderDashboardList();
         }
 
-        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.add('hidden'); }
-
-        function createCardHTML(lesson, isCompact = false) {
+        function createCardHTML(lesson) {
             const style = APP_CONFIG.tools[lesson.tool] || APP_CONFIG.defaultTool;
-            const iconHtml = renderIcon(style.icon);
             
             if (lesson.activa) {
-                const mediaHtml = getMediaEmbed(lesson.link);
-                let resourceButton = lesson.resourceLink ? `
-                    <a href="${lesson.resourceLink}" target="_blank" class="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#1F1F1F] border border-[#3E3E3E] text-neutral-400 text-xs font-semibold hover:border-orange-500 hover:text-orange-400 shadow-sm transition-all group">
-                        <i class="fa-solid fa-file-powerpoint text-orange-500 group-hover:scale-110 transition-transform"></i> Ver Presentación
-                    </a>` : '';
-
                 return `
                     <div class="rounded-2xl lesson-card flex flex-col relative overflow-hidden group h-full p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 rounded-2xl ${style.bg || 'bg-neutral-800'} ${style.color} border ${style.border || 'border-neutral-700'} flex items-center justify-center text-xl shadow-sm">
-                                ${iconHtml}
+                            <div class="w-12 h-12 rounded-2xl ${style.bg} ${style.color} border ${style.border} flex items-center justify-center text-xl">
+                                ${renderIcon(style.icon)}
                             </div>
                             <span class="status-badge bg-emerald-900/30 text-emerald-400 border border-emerald-800/50">Activo</span>
                         </div>
                         <div class="mb-4">
                             <p class="text-xs font-bold text-orange-500 uppercase tracking-wider mb-1">${lesson.tool}</p>
-                            <h3 class="text-xl font-bold text-white leading-snug mb-2 group-hover:text-orange-500 transition-colors">${lesson.title}</h3>
-                            <div class="flex items-center gap-3 mb-2">
+                            <h3 class="text-xl font-bold text-white leading-snug mb-2">${lesson.title}</h3>
+                            <div class="flex items-center gap-3 mb-3">
                                  <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-400 bg-[#1F1F1F] px-2 py-0.5 rounded border border-[#3E3E3E]">${lesson.week}</span>
+                                 <!-- AQUÍ SE VE EL TYPE Y DURATION -->
+                                 <span class="text-[10px] font-bold uppercase text-neutral-500 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${lesson.duration}</span>
+                                 <span class="text-[10px] font-bold uppercase text-neutral-500 bg-neutral-800/50 px-2 py-0.5 rounded">${lesson.type}</span>
                             </div>
                             <p class="text-sm text-neutral-400 leading-relaxed">${lesson.desc}</p>
                         </div>
-                        ${mediaHtml}
-                        ${resourceButton}
+                        <div class="video-wrapper"><iframe src="https://drive.google.com/file/d/1SWkr-6HDIKjWn-tfl54H8or1JoebO0oz/preview" frameborder="0" allowfullscreen></iframe></div>
                     </div>`;
             } else {
                 return `
                     <div class="rounded-2xl lesson-card lesson-locked flex flex-col relative overflow-hidden h-full p-6">
                         <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]">
                             <i class="fa-solid fa-lock text-neutral-500 text-2xl mb-2"></i>
-                            <span class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Próximamente</span>
+                            <span class="text-[10px] font-bold text-neutral-500 uppercase">Próximamente</span>
                         </div>
-                        <div class="opacity-30">
-                            <p class="text-xs font-bold text-orange-500 uppercase mb-1">${lesson.tool}</p>
-                            <h3 class="text-xl font-bold text-white mb-2">${lesson.title}</h3>
-                            <p class="text-sm text-neutral-400">${lesson.week}</p>
-                        </div>
+                        <h3 class="text-xl font-bold text-neutral-600 mb-2">${lesson.title}</h3>
+                        <p class="text-xs text-neutral-700 uppercase font-bold">${lesson.week}</p>
                     </div>`;
             }
         }
 
-        function renderDashboardList() {
-            document.getElementById('dashboard-list').innerHTML = lessons.slice(0, 4).map(l => createCardHTML(l, true)).join('');
-        }
-        function renderFullList() {
-            const search = document.getElementById('search-input').value.toLowerCase(); 
-            const filterTool = document.getElementById('filter-tool').value;
-            const filtered = lessons.filter(l => { 
-                const matchSearch = l.title.toLowerCase().includes(search) || l.desc.toLowerCase().includes(search); 
-                const matchTool = filterTool === 'all' || l.tool === filterTool; 
-                return matchSearch && matchTool; 
-            });
-            document.getElementById('lessons-grid').innerHTML = filtered.length ? filtered.map(l => createCardHTML(l, false)).join('') : `<div class="col-span-full text-center py-10 text-slate-500">Sin resultados.</div>`;
-        }
-        function filterLessons() { renderFullList(); }
+        function renderDashboardList() { document.getElementById('dashboard-list').innerHTML = lessons.slice(0, 2).map(l => createCardHTML(l)).join(''); }
+        function renderFullList() { document.getElementById('lessons-grid').innerHTML = lessons.map(l => createCardHTML(l)).join(''); }
         function updateStats() {
-            document.getElementById('stat-total').innerText = lessons.length;
             const activeCount = lessons.filter(l => l.activa).length;
+            document.getElementById('stat-total').innerText = lessons.length;
             document.getElementById('stat-active').innerText = activeCount;
             document.getElementById('stat-locked').innerText = lessons.length - activeCount;
             const progress = Math.round((activeCount / lessons.length) * 100);
