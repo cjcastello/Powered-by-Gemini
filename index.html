@@ -311,7 +311,7 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'learninghub-fritta';
         
         let app, auth, db, currentUser;
-        let sessionViews = {};
+        let sessionViews = {}; // Objeto para guardar si el usuario ya vio la lección
 
         if (firebaseConfig) {
             app = initializeApp(firebaseConfig);
@@ -324,10 +324,12 @@
         
         // --- NUEVA FUNCIÓN: Iniciar lección específica ---
         window.startLesson = async function(lessonId, iframeLink) {
-            // 1. Mostrar el vídeo
+            // 1. Mostrar el vídeo quitando el placeholder
             const container = document.getElementById(`video-container-${lessonId}`);
             if (container) {
                 container.innerHTML = `<iframe src="${iframeLink}" frameborder="0" allowfullscreen></iframe>`;
+                container.classList.remove('cursor-pointer', 'group/play');
+                container.onclick = null; // Evitar que se pulse repetidas veces
             }
 
             // 2. Registrar la visualización única en Firebase SOLO para esta lección
@@ -352,7 +354,7 @@
             
             // Adjuntar los eventos de búsqueda por JS en lugar de hacerlo en el HTML
             const searchInput = document.getElementById('search-input');
-            if (searchInput) searchInput.addEventListener('input', renderFullList); // 'input' detecta los cambios más fluidamente
+            if (searchInput) searchInput.addEventListener('input', renderFullList); 
             
             const filterTool = document.getElementById('filter-tool');
             if (filterTool) filterTool.addEventListener('change', renderFullList);
@@ -374,8 +376,6 @@
                     if (user) {
                         currentUser = user;
                         setupRealtimeCounters();
-                        // Eliminamos la función recordUniqueVisit() global de aquí 
-                        // para que no sume en TODAS las sesiones al entrar
                     } else {
                         currentUser = null;
                     }
@@ -404,10 +404,32 @@
             onSnapshot(viewsRef, (snapshot) => {
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    sessionViews[docSnap.id] = data.viewers ? data.viewers.length : 0;
+                    const viewers = data.viewers || [];
+                    const count = viewers.length;
+                    const seenByMe = viewers.includes(currentUser.uid); // Comprobar si mi usuario está en la base de datos
                     
+                    sessionViews[docSnap.id] = { count, seenByMe };
+                    
+                    // Actualizar números en el DOM
                     const counterEls = document.querySelectorAll(`.counter-val-${docSnap.id}`);
-                    counterEls.forEach(el => el.innerText = sessionViews[docSnap.id]);
+                    counterEls.forEach(el => el.innerText = count);
+
+                    // Actualizar estilos del contenedor del ojo en el DOM
+                    const containerEls = document.querySelectorAll(`.counter-container-${docSnap.id}`);
+                    containerEls.forEach(el => {
+                        const icon = el.querySelector(`.counter-icon-${docSnap.id}`);
+                        if (seenByMe) {
+                            // Estilo Naranja: Indica que este usuario ya lo vio
+                            el.className = `counter-container-${docSnap.id} flex items-center gap-1.5 text-[11px] font-bold text-orange-500 bg-orange-900/20 border border-orange-800/30 px-2.5 py-1 rounded-lg shadow-sm transition-colors`;
+                            el.title = "Visto por ti";
+                            if (icon) icon.className = `fa-solid fa-eye counter-icon-${docSnap.id}`;
+                        } else {
+                            // Estilo Gris: Vistas por otros, pero no por mí
+                            el.className = `counter-container-${docSnap.id} flex items-center gap-1.5 text-[11px] font-bold text-neutral-400 bg-[#1F1F1F] border border-[#3E3E3E] px-2.5 py-1 rounded-lg shadow-sm transition-colors`;
+                            el.title = "Vistas únicas";
+                            if (icon) icon.className = `fa-regular fa-eye counter-icon-${docSnap.id}`;
+                        }
+                    });
                 });
             }, (error) => {
                 console.error("Error al leer visitas:", error);
@@ -441,6 +463,11 @@
             if (viewName === 'lessons') renderFullList(); 
             if (viewName === 'dashboard') renderDashboardList();
         }
+        
+        function toggleMobileMenu() { 
+            const menu = document.getElementById('mobile-menu');
+            if (menu) menu.classList.toggle('hidden'); 
+        }
 
         function createCardHTML(lesson) {
             const style = APP_CONFIG.tools[lesson.tool] || APP_CONFIG.defaultTool;
@@ -457,7 +484,16 @@
                 }
 
                 let iframeLink = lesson.link ? lesson.link.replace('/view?usp=drive_link', '/preview') : '';
-                const viewCount = sessionViews[lesson.id] !== undefined ? sessionViews[lesson.id] : '...';
+                
+                // Obtener datos si existen, sino predeterminar vacío
+                const viewsData = sessionViews[lesson.id] || { count: '...', seenByMe: false };
+                
+                // Generar las clases iniciales según si el usuario ya lo vio o no
+                const containerClass = viewsData.seenByMe 
+                    ? 'text-orange-500 bg-orange-900/20 border-orange-800/30' 
+                    : 'text-neutral-400 bg-[#1F1F1F] border-[#3E3E3E]';
+                const eyeClass = viewsData.seenByMe ? 'fa-solid' : 'fa-regular';
+                const eyeTitle = viewsData.seenByMe ? 'Visto por ti' : 'Vistas únicas';
 
                 return `
                     <div class="rounded-2xl lesson-card flex flex-col relative overflow-hidden group h-full p-6">
@@ -467,9 +503,11 @@
                             </div>
                             <div class="flex flex-col items-end gap-2">
                                 <span class="status-badge bg-emerald-900/30 text-emerald-400 border border-emerald-800/50">Activa</span>
-                                <div class="flex items-center gap-1.5 text-[11px] font-bold text-orange-400 bg-[#1F1F1F] border border-[#3E3E3E] px-2.5 py-1 rounded-lg shadow-sm" title="Vistas únicas">
-                                    <i class="fa-regular fa-eye"></i>
-                                    <span class="counter-val-${lesson.id}">${viewCount}</span>
+                                
+                                <!-- CONTADOR DE VISITAS ÚNICAS (Color y título dinámico) -->
+                                <div class="counter-container-${lesson.id} flex items-center gap-1.5 text-[11px] font-bold ${containerClass} border px-2.5 py-1 rounded-lg shadow-sm transition-colors" title="${eyeTitle}">
+                                    <i class="${eyeClass} fa-eye counter-icon-${lesson.id}"></i>
+                                    <span class="counter-val-${lesson.id}">${viewsData.count}</span>
                                 </div>
                             </div>
                         </div>
@@ -484,7 +522,7 @@
                             <p class="text-sm text-neutral-400 leading-relaxed">${lesson.desc}</p>
                         </div>
                         
-                        <!-- NUEVO: Placeholder para cargar el vídeo solo bajo demanda -->
+                        <!-- Vídeo on-demand con play button -->
                         <div class="video-wrapper group/play cursor-pointer" id="video-container-${lesson.id}" onclick="startLesson('${lesson.id}', '${iframeLink}')">
                             <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover/play:bg-black/40 transition-colors z-10">
                                 <div class="w-14 h-14 rounded-full bg-orange-600 flex items-center justify-center mb-3 shadow-lg group-hover/play:scale-110 transition-transform">
@@ -551,4 +589,3 @@
     </script>
 </body>
 </html>
-
