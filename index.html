@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -107,8 +107,10 @@
             </div>
         </nav>
         
-        <div class="p-6 border-t border-[#1F1F1F] text-center">
-            <p class="text-[10px] text-neutral-600">© 2024 Powered by Fritta</p>
+        <div class="p-6 border-t border-[#1F1F1F] text-center flex flex-col items-center gap-4">
+            <p class="text-[10px] text-neutral-600">© 2026 Powered by Fritta</p>
+            <!-- Contador de visitas -->
+            <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=learninghub.fritta.com&count_bg=%23F97316&title_bg=%231F1F1F&icon=&icon_color=%23E7E7E7&title=Visitas&edge_flat=true" alt="Contador de visitas">
         </div>
     </aside>
 
@@ -172,13 +174,7 @@
         const APP_CONFIG = {
             logoIcon: "FRITTA_NEGRO_sRGB_2.jpg", 
             tools: {
-                'Power Up Sessions - 1': { icon: 'fa-solid fa-diagram-project', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
-                'Power Up Sessions - 2': { icon: 'fa-solid fa-book-open-reader', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
-                'Power Up Sessions - 3': { icon: 'fa-solid fa-magnifying-glass-chart', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
-                'Power Up Sessions - 4': { icon: 'fa-solid fa-chalkboard-user', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
-                'Power Up Sessions - 5': { icon: 'fa-solid fa-video', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
-                'Power Up Sessions - 6': { icon: 'fa-solid fa-terminal', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
-                'Power Up Sessions - 7': { icon: 'fa-solid fa-brain', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
+                'Power Up Sessions - 1': { icon: 'fa-solid fa-bolt-lightning', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
                 'Gemini Advanced': { icon: 'fa-solid fa-wand-magic-sparkles', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
                 'Google Docs':     { icon: 'fa-solid fa-file-lines', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
                 'Google Sheets':   { icon: 'fa-solid fa-table', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-800/30' },
@@ -382,6 +378,7 @@
             }
         }
 
+        // Funciones de renderizado principal
         function renderDashboardList() { document.getElementById('dashboard-list').innerHTML = lessons.slice(0, 4).map(l => createCardHTML(l)).join(''); }
         function renderFullList() { document.getElementById('lessons-grid').innerHTML = lessons.map(l => createCardHTML(l)).join(''); }
         function updateStats() {
