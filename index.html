@@ -72,6 +72,23 @@
             font-weight: 700; 
             text-transform: uppercase;
         }
+
+        /* Estilos para el contador personalizado */
+        .visit-counter {
+            background: #1F1F1F;
+            border: 1px solid #3E3E3E;
+            border-radius: 6px;
+            padding: 4px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #E5E5E5;
+        }
+        .visit-counter .count-value {
+            color: #F97316;
+        }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-black text-neutral-100">
@@ -109,8 +126,12 @@
         
         <div class="p-6 border-t border-[#1F1F1F] text-center flex flex-col items-center gap-4">
             <p class="text-[10px] text-neutral-600">© 2026 Powered by Fritta</p>
-            <!-- Contador de visitas alternativo -->
-            <img src="https://profile-counter.glitch.me/learninghub-fritta/count.svg" alt="Contador de visitas" style="border-radius: 5px;">
+            <!-- Contador de visitas mediante JS -->
+            <div class="visit-counter">
+                <i class="fa-solid fa-eye text-neutral-500"></i>
+                <span>Visitas:</span>
+                <span id="visit-count" class="count-value">...</span>
+            </div>
         </div>
     </aside>
 
@@ -287,7 +308,26 @@
             loadData(); 
             setGreeting();
             router('dashboard');
+            initVisitCounter();
         });
+
+        // Función para inicializar el contador de visitas
+        function initVisitCounter() {
+            // Usamos CountAPI de forma directa
+            fetch('https://api.countapi.xyz/hit/learninghub-fritta/visits')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.value) {
+                        document.getElementById('visit-count').innerText = data.value;
+                    } else {
+                        document.getElementById('visit-count').innerText = '...';
+                    }
+                })
+                .catch(err => {
+                    console.error("No se pudo cargar el contador:", err);
+                    document.getElementById('visit-count').innerText = '-';
+                });
+        }
 
         function setGreeting() {
             const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
