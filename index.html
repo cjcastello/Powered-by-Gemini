@@ -91,7 +91,10 @@
                 <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
             </button>
             <button onclick="router('lessons')" id="nav-lessons" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 text-sm rounded-lg">
-                <i class="fa-solid fa-layer-group w-5 text-center"></i> Catálogo
+                <i class="fa-solid fa-layer-group w-5 text-center"></i> Catálogo Sesiones
+            </button>
+            <button onclick="router('tips')" id="nav-tips" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 text-sm rounded-lg">
+                <i class="fa-solid fa-lightbulb w-5 text-center text-amber-500"></i> Trucos Gemini
             </button>
             <div class="mt-8 pt-6 border-t border-[#1F1F1F]">
                 <div class="px-4">
@@ -158,11 +161,11 @@
                 <div id="dashboard-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
             </section>
 
-            <!-- VISTA: CATÁLOGO -->
+            <!-- VISTA: CATÁLOGO DE SESIONES -->
             <section id="view-lessons" class="hidden fade-in max-w-7xl mx-auto w-full pb-12">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                     <div>
-                        <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo Completo</h2>
+                        <h2 class="text-3xl font-bold text-white tracking-tight">Catálogo de Sesiones</h2>
                         <p class="text-neutral-500 mt-2 text-lg">Las 7 sesiones programadas para tu equipo.</p>
                     </div>
                      <div class="flex gap-3 bg-[#292929] p-1.5 rounded-xl border border-[#3E3E3E] shadow-sm w-full md:w-auto">
@@ -177,8 +180,31 @@
                 </div>
                 <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
             </section>
+
+            <!-- VISTA: TRUCOS GEMINI -->
+            <section id="view-tips" class="hidden fade-in max-w-7xl mx-auto w-full pb-12">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold text-white tracking-tight">Trucos de Gemini</h2>
+                    <p class="text-neutral-500 mt-2 text-lg">Tips rápidos y guías paso a paso para maximizar tu productividad.</p>
+                </div>
+
+                <!-- Contenedor dinámico de trucos -->
+                <div id="tips-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </section>
         </div>
     </main>
+
+    <!-- MODAL PARA TRUCOS (Añadido nuevo) -->
+    <div id="tip-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10 opacity-0 transition-opacity duration-300">
+        <div class="bg-[#292929] rounded-3xl border border-[#3E3E3E] shadow-2xl max-w-4xl w-full max-h-full flex flex-col relative overflow-hidden transform scale-95 transition-transform duration-300" id="tip-modal-panel">
+            <button onclick="closeTipModal()" class="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-[#1F1F1F] hover:bg-orange-600 text-neutral-400 hover:text-white rounded-full flex items-center justify-center transition-colors border border-[#3E3E3E] z-20">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="overflow-y-auto p-6 md:p-12 w-full h-full relative z-10" id="tip-modal-content">
+                <!-- El contenido se inyecta aquí -->
+            </div>
+        </div>
+    </div>
 
     <!-- LÓGICA Y CONEXIÓN CON BASE DE DATOS (FIRESTORE) -->
     <script type="module">
@@ -270,7 +296,7 @@
                 tool: 'Power Up Sessions - 5',
                 icon: 'fa-solid fa-video',
                 title: 'Google Vids',
-                desc: 'Google Vids es una herramienta de IA para crear vídeos profesionales en el entorno de trabajo. Genera automáticamente guiones, escenas y locuciones a partir de documentos de Drive.',
+                desc: 'Google Vids es una herramienta de IA para crear vídeos profesionales en el entorno de trabajo. Genera automáticamente guiones, scenes y locuciones a partir de documentos de Drive.',
                 link: 'https://drive.google.com/file/d/1pq9eZD1uD8v7Dsl9EQ3oLeahGvdVLgBa/view?usp=drive_link',
                 resourceLink: 'https://docs.google.com/presentation/d/1BwYZUkiHgfkbVA2FermWncSIGWlRoWSVLNA368oiIl4/edit?usp=drive_link',
                 activa: false,
@@ -308,6 +334,603 @@
             }
         ];
 
+        // --- ARRAY DE TRUCOS GEMINI ---
+        // Puedes añadir más trucos copiando y pegando todo el bloque encerrado entre llaves { } y separándolos por comas.
+        const TRUCOS_GEMINI = [
+            {
+                id: 't1',
+                icon: 'fa-solid fa-envelope-open-text',
+                title: 'Redacta en Docs, aprueba y envía desde Gmail',
+                contentHTML: `
+                    <p>Puedes usar Google Docs para preparar un borrador de correo electrónico en equipo. Toda la edición y comentarios se hacen en el documento antes de enviarlo.</p>
+                    <p>La función usa una plantilla específica dentro de Docs.</p>
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">En un documento de Google Docs, escribe <strong class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-orange-400 select-all cursor-pointer" title="Haz clic para seleccionar">@borrador de correo</strong>.</li>
+                        <li class="pl-2">Selecciona la plantilla que aparece. Se insertarán los campos "Para:", "Asunto:" y el cuerpo.</li>
+                        <li class="pl-2">Rellena los campos y redacta el mensaje.</li>
+                        <li class="pl-2">Usa el botón "Compartir" para invitar a tu equipo a revisar o editar el texto. Todos trabajarán sobre ese mismo borrador.</li>
+                        <li class="pl-2">Una vez que el correo esté aprobado y listo, haz clic en el <strong class="text-blue-400">icono azul de Gmail</strong> que está a la izquierda de la plantilla.</li>
+                        <li class="pl-2">Esta acción abrirá una nueva ventana de redacción en Gmail.</li>
+                        <li class="pl-2">El borrador de Gmail se rellenará automáticamente con los destinatarios, el asunto y el cuerpo del mensaje que preparaste en el Doc.</li>
+                        <li class="pl-2">Solo tienes que pulsar "Enviar" desde Gmail.</li>
+                    </ol>
+                    <p class="mt-8 pt-4 border-t border-[#3E3E3E]">Es un flujo útil para asegurar que un correo importante está revisado por todos antes de salir.</p>
+                `
+            },
+            {
+                id: 't2',
+                icon: 'fa-solid fa-magnifying-glass',
+                title: 'Dos formas de usar Gemini con tu Gmail',
+                contentHTML: `
+                    <p>Hay dos flujos principales: uno para <em>encontrar</em> información específica y otro para <em>crear</em> contenido nuevo basado en hilos largos.</p>
+                    
+                    <h3 class="text-xl font-bold text-white mt-8 mb-4 border-b border-[#3E3E3E] pb-2">Flujo 1: El Panel Lateral (Para encontrar correos olvidados)</h3>
+                    <p class="mb-4">Usa esto cuando necesites encontrar un correo específico del que no recuerdas todos los detalles (con quién era, cuándo llegó).</p>
+                    <p class="font-bold text-white mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-2 marker:text-neutral-500 mb-6">
+                        <li class="pl-2">Abre tu Gmail y haz clic en el <strong>icono de Gemini</strong> en el panel lateral derecho.</li>
+                        <li class="pl-2">Pídele que encuentre un correo usando lenguaje natural, dándole el contexto que recuerdes.</li>
+                    </ol>
+                    <p class="font-bold text-white mb-2">Ejemplos de Prompts (instrucciones):</p>
+                    <ul class="list-disc pl-6 space-y-3 marker:text-orange-500 text-orange-200/90 italic">
+                        <li class="pl-2">Encuentra un correo de hace unos dos años sobre un software de contabilidad. No recuerdo de quién era, pero hablaba del coste de la licencia.</li>
+                        <li class="pl-2">Busca el email que me envió [Nombre del Cliente] el verano pasado con el primer borrador del contrato.</li>
+                        <li class="pl-2">¿Dónde está el correo con la confirmación de la reserva del hotel para el evento de 2023?</li>
+                    </ul>
+
+                    <h3 class="text-xl font-bold text-white mt-10 mb-4 border-b border-[#3E3E3E] pb-2">Flujo 2: gemini.google.com (Para resumir hilos y crear contenido)</h3>
+                    <p class="mb-4">Usa esto cuando tengas una reunión, necesites preparar un informe o quieras resumir un tema complejo que se ha tratado en múltiples correos.</p>
+                    <p class="font-bold text-white mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-2 marker:text-neutral-500 mb-6">
+                        <li class="pl-2">Dirígete a <a href="https://gemini.google.com" target="_blank" class="text-blue-400 hover:underline">gemini.google.com</a> en una nueva pestaña.</li>
+                        <li class="pl-2">En la barra de chat, escribe <strong class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-orange-400">@Gmail</strong>. Esto conecta al asistente con tu bandeja de entrada.</li>
+                        <li class="pl-2">Pídele que busque, resuma y cree.</li>
+                    </ol>
+                    <p class="font-bold text-white mb-2">Ejemplos de Prompts (instrucciones):</p>
+                    <ul class="list-disc pl-6 space-y-3 marker:text-orange-500 text-orange-200/90 italic">
+                        <li class="pl-2">@Gmail busca todos los correos con [Cliente] y [Compañero] sobre el "Proyecto granillas" de los últimos 6 meses y haz un resumen.</li>
+                        <li class="pl-2">@Gmail resúmeme los 5 puntos clave de toda la conversación por correo sobre el "Lanzamiento Q4" y luego, con esa información, crea un borrador de 3 diapositivas para la reunión de seguimiento.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 't3',
+                icon: 'fa-solid fa-clock-rotate-left',
+                title: 'Analiza el historial de un Gem y ponte al día',
+                contentHTML: `
+                    <p>Cuando compartes o te comparten un Gem, su historial de chat se convierte en una fuente de información valiosa. Puedes pedirle a Gemini que resuma esas interacciones para entender cómo lo aprovechan los demás.</p>
+                    <p>Esta función te ahorra un tiempo valioso, te da el contexto de lo que otros han preguntado y te permite ponerte al día al instante para poder colaborar de inmediato.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Abre el Gem compartido que estás usando con tu equipo.</li>
+                        <li class="pl-2">Dirígete directamente a la barra de chat.</li>
+                        <li class="pl-2">
+                            Luego escribe un prompt como: 
+                            <p class="text-orange-300 italic mt-2 ml-4">"Hazme un resumen de las conversaciones anteriores."</p>
+                            <p class="mt-2">O sé más específico:</p>
+                            <p class="text-orange-300 italic mt-2 ml-4">"Resume los puntos clave que se han tratado sobre el proyecto X en este chat."</p>
+                        </li>
+                    </ol>
+
+                    <p class="mt-8 pt-4 border-t border-[#3E3E3E]">Gemini analizará el historial completo y te dará un resumen consolidado. En segundos tendrás el contexto que necesitas para entender el estado del proyecto, ver qué dudas ya se resolvieron o identificar los temas más importantes.</p>
+                `
+            },
+            {
+                id: 't4',
+                icon: 'fa-solid fa-table-cells',
+                title: 'De Gmail a Sheets, sin copiar y pegar',
+                contentHTML: `
+                    <p>Con Gemini puedes automatizar en segundos tablas, listados de precios o reportes a una hoja de cálculo.</p>
+                    <p>Esta función extrae y estructura la información directamente desde el correo. La lleva a Google Sheets o Docs al instante y sin errores. Esto te ahorra tiempo en tareas repetitivas, mejora la precisión de los datos y te permite centrarte en analizar la información, no en formatearla.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Abre el correo que contiene la tabla o los datos que quieres extraer.</li>
+                        <li class="pl-2">Haz clic en el icono de Gemini y dirígete al chat.</li>
+                        <li class="pl-2">
+                            Luego escribe un prompt como: 
+                            <p class="text-orange-300 italic mt-2 ml-4">"Extrae esta tabla y conviértela en formato listo para Google Sheets."</p> 
+                            Gemini generará el texto estructurado.
+                        </li>
+                        <li class="pl-2">Copia y pégalo directamente en tu hoja de cálculo o documento y listo.</li>
+                    </ol>
+
+                    <p class="mt-8 pt-4 border-t border-[#3E3E3E]">En segundos tendrás tus datos listos para trabajar, presentar o compartir.</p>
+                `
+            },
+            {
+                id: 't5',
+                icon: 'fa-solid fa-robot',
+                title: 'Análisis de datos en Google Sheets con la función AI',
+                contentHTML: `
+                    <p>Deja que Gemini traduzca tus ideas en fórmulas listas para usar. Muchas veces tenemos un gran volumen de datos que necesitamos procesar y para ello existe la función <code class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-blue-400">=AI("prompt"; [rango])</code> que es una herramienta de Inteligencia Artificial que te permite obtener respuestas o análisis complejos directamente en la celda.</p>
+                    <p>Ideal para cuando necesitas analizar datos, filtrar información o automatizar cálculos complejos sin perder tiempo.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Su funcionamiento es muy sencillo:</p>
+                    <ol class="list-decimal pl-6 space-y-5 marker:text-neutral-500">
+                        <li class="pl-2">
+                            <strong>Elaboras un prompt:</strong> es decir que le indicas la tarea con tus propias palabras:
+                            <p class="text-orange-300 italic mt-1">["Clasifica este concepto de gasto como: Comida, Transporte, Suministros u Ocio"]</p>
+                        </li>
+                        <li class="pl-2">
+                            <strong>Rango:</strong> Le indicas la celda o el rango de celdas que debe analizar para realizar la tarea. 
+                            <p class="text-blue-300 mt-1">[B2]</p>
+                        </li>
+                    </ol>
+
+                    <div class="mt-8 p-5 bg-[#1F1F1F] border border-[#3E3E3E] rounded-xl font-mono text-sm overflow-x-auto whitespace-nowrap text-green-400">
+                        =AI("Clasifica este concepto de gasto como: Comida, Transporte, Suministros u Ocio"; B2)
+                    </div>
+                `
+            },
+            {
+                id: 't6',
+                icon: 'fa-solid fa-person-chalkboard',
+                title: 'Crear una presentación con la aplicación de Gemini',
+                contentHTML: `
+                    <p>Imaginemos que tenemos que preparar el lanzamiento interno de un nuevo producto y no sabemos por dónde empezar.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">🪄 Acción:</p>
+                    <ol class="list-decimal pl-6 space-y-3 marker:text-neutral-500 font-medium">
+                        <li class="pl-2">Entrad en <a href="https://gemini.google.com" target="_blank" class="text-blue-400 hover:underline">gemini.google.com</a></li>
+                        <li class="pl-2">En las herramientas, seleccionad Canvas</li>
+                        <li class="pl-2">Escribid un prompt claro, por ejemplo:</li>
+                    </ol>
+                    
+                    <div class="my-6 p-6 border-l-4 border-orange-500 bg-orange-900/10 text-orange-200/90 italic rounded-r-xl">
+                        "Crea una presentación en Google Slides para el lanzamiento interno de nuestra nueva línea de esmaltes 'Eco-Glaze' de Altadia. Incluye una diapositiva de título, una sobre el problema del mercado (demanda de sostenibilidad), tres sobre beneficios clave (menor huella de carbono, durabilidad superior, nueva gama de colores) y una de próximos pasos para el equipo de ventas."
+                    </div>
+
+                    <p class="font-bold text-white mt-8 mb-3 border-t border-[#3E3E3E] pt-6">💡 Resultado:</p>
+                    <p class="mb-4">Gemini genera un borrador de presentación en Google Slides y te da un enlace directo. Al abrirlo, encontrarás:</p>
+                    <ul class="list-disc pl-8 space-y-2 marker:text-blue-500 text-neutral-300">
+                        <li class="pl-2">Una diapositiva de título.</li>
+                        <li class="pl-2">Varias diapositivas de contenido con los puntos clave ya redactados.</li>
+                        <li class="pl-2">Una conclusión lista para cerrar con impacto.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 't7',
+                icon: 'fa-brands fa-google-drive',
+                title: 'Encuentra respuestas en Drive',
+                contentHTML: `
+                    <p>Con Gemini en Drive, puedes hacer preguntas sobre el contenido de tus archivos sin necesidad de abrirlos.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-3 marker:text-neutral-500">
+                        <li class="pl-2">Ve a tu unidad de Google Drive.</li>
+                        <li class="pl-2">Haz clic en el icono de Gemini (✨) arriba a la derecha.</li>
+                        <li class="pl-2">Pregunta directamente lo que necesitas saber.</li>
+                    </ol>
+
+                    <p class="font-bold text-white mt-8 mb-3">Ejemplos de Prompts:</p>
+                    <ul class="list-disc pl-6 space-y-3 marker:text-orange-500 text-orange-200/90 italic">
+                        <li class="pl-2">¿Cuáles son los plazos de entrega del proyecto "Alpha" según los últimos documentos?</li>
+                        <li class="pl-2">Resume los puntos clave de las propuestas que se han subido esta semana.</li>
+                        <li class="pl-2">¿Quién es el responsable de PRL según el manual de seguridad?</li>
+                    </ul>
+
+                    <p class="mt-8 pt-4 border-t border-[#3E3E3E]">Gemini leerá múltiples archivos (PDFs, Docs, Slides) y te dará una respuesta sintetizada, indicándote además en qué archivo encontró la información (con una cita al pie) para que puedas verificarlo.</p>
+                `
+            },
+            {
+                id: 't8',
+                icon: 'fa-solid fa-code-compare',
+                title: 'Ahorra tiempo comparando documentos',
+                contentHTML: `
+                    <p>Frecuentemente, tenemos que contrastar propuestas, versiones de informes o documentos largos para tomar una decisión rápida. En lugar de leer línea por línea, puedes usar un Google Docs en blanco como tu <strong>"plataforma de análisis"</strong> para que Gemini analice dos o más archivos que adjuntes y te entregue un resumen analítico con las diferencias y similitudes clave.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-3">Este truco es ideal para:</p>
+                    <ul class="list-disc pl-6 space-y-2 marker:text-blue-500">
+                        <li class="pl-2">Comparar dos propuestas de proveedores.</li>
+                        <li class="pl-2">Ver las diferencias entre la versión 1 y la versión final de un informe.</li>
+                        <li class="pl-2">Analizar dos planes de proyecto distintos.</li>
+                    </ul>
+
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Abre un <strong>nuevo documento</strong> en Google Docs.</li>
+                        <li class="pl-2">Haz clic en el ícono ✨ de <strong>Gemini</strong> en la barra lateral (esquina superior derecha) para abrir el chat.</li>
+                        <li class="pl-2"><strong>Añade</strong> los dos documentos (o más) de tu Drive que quieres comparar, usando el botón de <strong>"añadir fuentes"</strong> en el chat de Gemini.</li>
+                        <li class="pl-2">Introduce un <strong>prompt claro y específico</strong> que indique lo que quieres contrastar. Por ejemplo:
+                            <div class="mt-4 p-5 bg-[#1F1F1F] border border-[#3E3E3E] rounded-xl text-orange-200/90 italic">
+                                [Basado en los dos documentos adjuntos (Propuesta A y Propuesta B), genera un resumen comparativo en formato tabla. La tabla debe destacar las diferencias clave en la estrategia de precios y las similitudes en la previsión de crecimiento.]
+                            </div>
+                        </li>
+                        <li class="pl-2">Revisa el resumen generado. Puedes pedirle ajustes si lo necesitas, como: <em>"Haz más énfasis en los riesgos"</em> o <em>"Genera una lista de 5 puntos clave para la dirección"</em></li>
+                    </ol>
+                `
+            },
+            {
+                id: 't9',
+                icon: 'fa-solid fa-image',
+                title: 'Crea una foto sin salir de Google Docs',
+                contentHTML: `
+                    <p>Esta función te permite generar imágenes con Inteligencia Artificial directamente en la barra lateral de tu documento e insertarlas con un clic. Te permite ilustrar conceptos complejos al instante, mantener el foco en la redacción y obtener imágenes 100% originales y libres de derechos.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">En tu Google Doc, abre el complemento <strong>Nano Banana</strong> (o la herramienta de creación de imágenes) desde el menú de "Herramientas" del chat de Gemini.</li>
+                        <li class="pl-2">En la barra lateral, describe exactamente la imagen que necesitas. Cuantos más detalles, mejor.</li>
+                        <li class="pl-2">Haz clic en "Enviar" e inserta la imagen directamente en tu documento.</li>
+                    </ol>
+
+                    <p class="font-bold text-white mt-8 mb-4 border-t border-[#3E3E3E] pt-6">Mira este ejemplo para un reporte de innovación de <span class="text-orange-400">Altadia Group</span>:</p>
+                    <p class="mb-4">Imagina que necesitas ilustrar una nueva línea de esmaltes ecológicos. En lugar de buscar "fábrica cerámica" en Google Images y encontrar fotos genéricas, le pides esto a la IA:</p>
+                    
+                    <div class="my-6 p-6 border-l-4 border-orange-500 bg-orange-900/10 text-orange-200/90 italic rounded-r-xl">
+                        "Fotografía profesional de un laboratorio moderno de I+D cerámico, primer plano de una superficie de azulejo con un esmalte azul turquesa innovador y brillante, con maquinaria de alta tecnología desenfocada al fondo. Iluminación limpia y futurista."
+                    </div>
+                `
+            },
+            {
+                id: 't10',
+                icon: 'fa-solid fa-chart-simple',
+                title: 'Minigráficos en Sheets',
+                contentHTML: `
+                    <p>Esta función te permite insertar gráficos visuales <em>dentro</em> de una sola celda, permitiéndote ver la historia detrás de los datos de un vistazo, sin ocupar espacio con gráficos gigantes.</p>
+                    <p>Úsalo para resumir la historia detrás de tus datos. En lugar de obligar al lector a analizar una larga fila de números, esta opción transforma esos datos en una línea simple que responde instantáneamente a la pregunta: <strong>¿la situación está mejorando o empeorando?</strong></p>
+                    
+                    <p class="mt-6 mb-2">Lo mejor es que no necesitas memorizar fórmulas complejas; la aplicación de <strong>Gemini</strong> puede ayudarte a escribirlas por ti.</p>
+
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-3 marker:text-neutral-500">
+                        <li class="pl-2">Ve a la aplicación de Gemini</li>
+                        <li class="pl-2">Asegúrate de tener activo el modelo <strong>"Razonamiento"</strong></li>
+                        <li class="pl-2">Adjunta tu hoja de cálculo en el chat</li>
+                        <li class="pl-2">
+                            Escribe: 
+                            <ul class="list-disc pl-6 mt-2 space-y-2 text-orange-200/90 italic marker:text-orange-500">
+                                <li>"Dime la fórmula para crear un minigráfico de línea"</li>
+                                <li>"Dime la fórmula para crear un minigráfico de barras destacando el máximo en verde"</li>
+                            </ul>
+                        </li>
+                        <li class="pl-2 mt-3">Dale a Enter.</li>
+                    </ol>
+
+                    <p class="mt-8 pt-4 border-t border-[#3E3E3E]">En segundos, obtendrás las instrucciones para pegar la fórmula en la celda de tu tabla de la hoja de cálculo:</p>
+                    
+                    <div class="mt-4 p-5 bg-[#1F1F1F] border border-[#3E3E3E] rounded-xl font-mono text-sm space-y-3 overflow-x-auto whitespace-nowrap">
+                        <div class="text-green-400">=SPARKLINE(A2:E2; {"charttype"&#92;"column"; "highcolor"&#92;"green"})</div>
+                        <div class="text-blue-400">=SPARKLINE(A2:E2; {"charttype"&#92;"line"; "color"&#92;"blue"})</div>
+                    </div>
+                `
+            },
+            {
+                id: 't11',
+                icon: 'fa-solid fa-file-pdf',
+                title: 'Convierte una foto o PDF en un Sheets editable',
+                contentHTML: `
+                    <p>Con Gemini puedes "leer" una imagen y convertirla en una hoja de cálculo funcional en un instante.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Abre <a href="https://gemini.google.com" target="_blank" class="text-blue-400 hover:underline">gemini.google.com</a>.</li>
+                        <li class="pl-2">Haz clic en el icono de <strong>"Adjuntar imagen"</strong> (o el símbolo +) y sube el PDF o la captura de pantalla de la tabla que quieres digitalizar.</li>
+                        <li class="pl-2">
+                            Escribe el siguiente <em>prompt</em>:
+                            <ul class="list-disc pl-6 mt-2 space-y-2 text-orange-200/90 italic marker:text-orange-500">
+                                <li>"Analiza esta imagen, extrae los datos de la tabla y pónmelos en un formato de tabla que pueda copiar."</li>
+                                <li>O sé más específico: "Extrae la fecha, el número de factura y el importe total de estos documentos y crea una tabla resumen."</li>
+                            </ul>
+                        </li>
+                        <li class="pl-2">Una vez Gemini genere la tabla, verás una opción justo debajo que dice <strong>"Exportar a Hojas de cálculo"</strong>.</li>
+                        <li class="pl-2">Haz clic y... ¡listo! Se abrirá un Google Sheet nuevo con todos tus datos perfectamente organizados y listos para trabajar.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 't12',
+                icon: 'fa-solid fa-bolt',
+                title: 'Crea archivos con Atajos ".new"',
+                contentHTML: `
+                    <p>Existe una forma mucho más rápida de empezar a trabajar. Puedes crear archivos directamente desde la barra de direcciones de tu navegador (Chrome, Edge, Safari) sin pasar por Drive.</p>
+                    
+                    <p class="mb-4">Solo tienes que escribir una de estas palabras seguidas de <code>.new</code> en tu buscador y pulsar Enter:</p>
+
+                    <ul class="list-disc pl-6 space-y-3 marker:text-blue-500">
+                        <li class="pl-2"><strong class="text-blue-400">doc.new</strong>: Crea un documento de Google Docs nuevo al instante.</li>
+                        <li class="pl-2"><strong class="text-green-400">sheet.new</strong>: Abre una hoja de cálculo de Google Sheets vacía.</li>
+                        <li class="pl-2"><strong class="text-yellow-400">slides.new</strong>: Genera una nueva presentación de Google Slides.</li>
+                        <li class="pl-2"><strong class="text-purple-400">form.new</strong>: Crea un formulario de Google Forms desde cero.</li>
+                    </ul>
+
+                    <div class="mt-8 p-5 bg-[#1F1F1F] border border-[#3E3E3E] rounded-xl">
+                        <p class="text-neutral-300">
+                            💡 <strong class="text-white">Tip:</strong> Si tienes varias cuentas de Google abiertas (personal y de empresa), puedes forzar en cuál se crea el archivo añadiendo un número. Por ejemplo, <strong class="text-blue-400">doc.new/1</strong> lo creará en tu cuenta principal y <strong class="text-blue-400">doc.new/2</strong> en la secundaria.
+                        </p>
+                    </div>
+                `
+            },
+            {
+                id: 't13',
+                icon: 'fa-solid fa-pen-nib',
+                title: 'Dibuja tus instrucciones sobre cualquier imagen',
+                contentHTML: `
+                    <p>Con Gemini puedes marcar, rodear o señalar con un "lápiz" virtual directamente sobre la imagen para dar instrucciones precisas.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-3 marker:text-neutral-500">
+                        <li class="pl-2">Entra en <a href="https://gemini.google.com" target="_blank" class="text-blue-400 hover:underline">gemini.google.com</a>.</li>
+                        <li class="pl-2">Sube una imagen (un diseño, una foto de un producto o un espacio).</li>
+                        <li class="pl-2">Haz clic en el icono del lápiz (Editar) que aparece sobre la imagen subida.</li>
+                        <li class="pl-2">Se abrirá un editor: selecciona o rodea con el cursor la zona que quieres modificar.</li>
+                        <li class="pl-2">Escribe tu instrucción en el chat.</li>
+                    </ol>
+
+                    <p class="font-bold text-white mt-8 mb-3">Ejemplos de lo que puedes hacer:</p>
+                    <ul class="list-disc pl-6 space-y-3 marker:text-orange-500">
+                        <li class="pl-2"><strong>Borrar:</strong> Rodea un objeto molesto en una foto y escribe: <em class="text-orange-200/90">"Borra esto de la imagen"</em>.</li>
+                        <li class="pl-2"><strong>Sustituir:</strong> Rodea un producto en una mesa y escribe: <em class="text-orange-200/90">"Cambia este objeto por una pieza cerámica de nuestra nueva colección"</em>.</li>
+                        <li class="pl-2"><strong>Mover o cambiar color:</strong> Señala una zona y pide: <em class="text-orange-200/90">"Pon esta zona en color azul corporativo"</em> o <em class="text-orange-200/90">"Mueve este elemento más a la derecha"</em>.</li>
+                    </ul>
+
+                    <p class="mt-8 pt-4 border-t border-[#3E3E3E]">Esta función agéntica permite que Gemini "vea" exactamente dónde quieres el cambio, eliminando las pruebas y errores.</p>
+                `
+            },
+            {
+                id: 't14',
+                icon: 'fa-solid fa-language',
+                title: 'Traduce relaciones de datos en segundos con Google Sheets',
+                contentHTML: `
+                    <p>Con la fórmula <strong>GOOGLETRANSLATE</strong> en Hojas de cálculo, puedes traducir columnas enteras automáticamente. 🌍✨</p>
+                    <p>Esta función conecta tu hoja directamente con el motor de traducción de Google, permitiéndote convertir el idioma de cientos de celdas al instante sin instalar nada extra.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">En tu Hoja de cálculo, selecciona la celda donde quieres que aparezca la traducción.</li>
+                        <li class="pl-2">
+                            Escribe la fórmula básica: <code class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-green-400">=GOOGLETRANSLATE(A2)</code> (sustituyendo A2 por la celda con el texto original).
+                            <p class="text-sm text-neutral-400 mt-2 italic">Nota: Esta versión detecta el idioma original de tu hoja de cálculo y lo traduce automáticamente al idioma de tu configuración.</p>
+                        </li>
+                        <li class="pl-2">
+                            O usa la versión avanzada para elegir idiomas específicos: <code class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-green-400">=GOOGLETRANSLATE(A2; "it"; "es")</code>
+                            <p class="text-sm text-neutral-400 mt-2 italic">En este ejemplo: "it" es el idioma origen (italiano) y "es" es el destino (español).</p>
+                        </li>
+                        <li class="pl-2">Arrastra la esquina de la celda hacia abajo para aplicar la fórmula a toda tu lista.</li>
+                    </ol>
+
+                    <p class="font-bold text-white mt-8 mb-3 border-t border-[#3E3E3E] pt-6">Mira este ejemplo para un reporte interno:</p>
+                    <p class="mb-4">Imagina que recibes un listado con observaciones sobre materias primas o feedback de las plantas de Italia o Brasil, y los textos vienen en su idioma original.</p>
+                    <p class="mb-4">En lugar de traducir cada comentario manualmente, escribes en la columna de al lado:</p>
+                    <div class="p-4 bg-[#1F1F1F] border border-[#3E3E3E] rounded-xl font-mono text-sm mb-4 text-green-400">
+                        =GOOGLETRANSLATE(A2; "it"; "es")
+                    </div>
+                    <p>En segundos, tienes toda la información traducida al español para tu informe, lista para analizar o compartir con el resto del equipo.</p>
+                `
+            },
+            {
+                id: 't15',
+                icon: 'fa-solid fa-check-double',
+                title: 'Verifica respuestas de Gemini',
+                contentHTML: `
+                    <p>Imagina que le has pedido a Gemini que te indique datos estadísticos reales sobre un tema en concreto y te devuelve información que no sabes si es verídica al 100%. 🧠🔍</p>
+                    <p>La función <strong>'Verificar respuesta'</strong> no es un simple buscador, es tu manera de asegurar que los datos de tu respuesta son fiables. Esta funcionalidad, utiliza el motor de búsqueda de Google para hacer un <em>fact-checking</em> en tiempo real, pintando tu texto de colores para que sepas exactamente qué puedes usar y qué debes revisar.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Después de que Gemini te dé una respuesta con datos, nombres o fechas, pulsa el botón con el icono de <strong>Google (G)</strong> ("Verificar respuesta").</li>
+                        <li class="pl-2">
+                            Fíjate en los colores:
+                            <ul class="list-disc pl-6 mt-2 space-y-2 marker:text-neutral-500">
+                                <li><strong class="text-green-400">Resaltado en Verde:</strong> Google encontró contenido similar en la web (es seguro usarlo).</li>
+                                <li><strong class="text-orange-400">Resaltado en Naranja:</strong> Google encontró información distinta o no encontró fuentes (cuidado, podría ser un error).</li>
+                            </ul>
+                        </li>
+                        <li class="pl-2">Haz clic en las frases resaltadas para ver el enlace directo a la fuente y contrastar la información en un segundo.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 't16',
+                icon: 'fa-solid fa-book-bookmark',
+                title: 'Glosario de términos con NotebookLM',
+                contentHTML: `
+                    <p>¿Te acabas de incorporar a un proyecto nuevo y te encuentras con terminología que no entiendes? Deja que NotebookLM cree tu propio diccionario.</p>
+                    <p>A diferencia de un buscador normal, NotebookLM solo usará los documentos de tu empresa, por lo que las definiciones serán 100% exactas para tu contexto. De una manera muy personalizada y en tan solo segundos, podrás crear tu propio diccionario de proyecto o tu documento de nomenclaturas para tener claras tus nuevas definiciones en todo momento.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Entra en <a href="https://notebooklm.google.com" target="_blank" class="text-blue-400 hover:underline">notebooklm.google.com</a> y crea una nueva libreta llamada <em>"Glosario del Proyecto"</em>.</li>
+                        <li class="pl-2">Sube tus fuentes: Carga los manuales de bienvenida, PDFs de estrategia o documentos de procesos que te han enviado y que contengan esos términos que no terminas de comprender.</li>
+                        <li class="pl-2">
+                            En el chat, pide lo siguiente: 
+                            <div class="mt-3 p-4 border-l-4 border-orange-500 bg-orange-900/10 text-orange-200/90 italic rounded-r-xl">
+                                "Genera un glosario completo con todos los términos técnicos y siglas que aparecen en estos documentos. Explícalos de forma sencilla para alguien que acaba de empezar."
+                            </div>
+                        </li>
+                        <li class="pl-2"><strong>El truco extra:</strong> Una vez que te dé la lista, haz clic en <strong>"Anclar como nota"</strong>.</li>
+                        <li class="pl-2">Ahora, cada vez que escuches un término nuevo en una reunión, abre tu libreta y pregúntale directamente. Te dirá qué significa y en qué documento se menciona exactamente.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 't17',
+                icon: 'fa-solid fa-mobile-screen',
+                title: 'De tu cuaderno al mundo digital en segundos',
+                contentHTML: `
+                    <p>Esta función no <strong class="text-white">solo</strong> lee tu letra, sino que interpreta la estructura de tu dibujo y la convierte en un documento digital editable, permitiéndote ampliar ideas o refinar el diseño sin picar una sola tecla.</p>
+                    <p>En cuestión de segundos, Gemini transforma ese garabato a lápiz en un esquema profesional listo para ser editado y mejorado:</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Haz una foto nítida a tu esquema o mapa mental del cuaderno.</li>
+                        <li class="pl-2">
+                            Sube la imagen a <strong>Gemini</strong>, selecciona la herramienta <strong>Canvas</strong> y pídele: 
+                            <span class="text-orange-200/90 italic">"Convierte este esquema en un documento interactivo para que pueda editarlo y ampliarlo"</span>.
+                        </li>
+                        <li class="pl-2">Automáticamente se abrirá la ventana de <strong>Canvas</strong> con tu contenido ya digitalizado. Desde ahí, podrás corregir textos, añadir nuevos nodos o pedirle a Gemini que desarrolle los puntos que dejaste a medias en el papel.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 't18',
+                icon: 'fa-solid fa-link',
+                title: 'Conecta Gemini con tus cuadernos de NotebookLM',
+                contentHTML: `
+                    <p>Ya no hace falta abrir NotebookLM cada vez que necesites consultar tus archivos. Ahora puedes acceder a todos tus cuadernos directamente desde el chat de Gemini. Esto permite combinar la información de tus documentos personales con la capacidad de la IA para buscar en internet o redactar textos profesionales en un mismo sitio.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-3 marker:text-neutral-500 mb-8">
+                        <li class="pl-2">Entra en <a href="https://gemini.google.com" target="_blank" class="text-blue-400 hover:underline">gemini.google.com</a>.</li>
+                        <li class="pl-2">Haz clic en el botón "+" (Añadir) que aparece a la izquierda de la barra de escritura.</li>
+                        <li class="pl-2">Selecciona NotebookLM y elige el cuaderno que necesites de la lista.</li>
+                    </ol>
+
+                    <p class="font-bold text-white mb-3">¿Qué ventajas tiene hacerlo así?</p>
+                    <ul class="list-disc pl-6 space-y-4 marker:text-blue-500">
+                        <li class="pl-2"><strong>Combinación de datos:</strong> Puedes pedirle a Gemini que compare la información de tu cuaderno con datos actuales de internet (ej. <em class="text-neutral-400">"Compara los precios de este presupuesto en mi cuaderno con los precios actuales de mercado en la web"</em>).</li>
+                        <li class="pl-2"><strong>Creación de contenido:</strong> Usa tus notas de NotebookLM para generar borradores de correos en Gmail o documentos en Docs directamente desde el mismo chat.</li>
+                        <li class="pl-2"><strong>Multitarea:</strong> No tienes que cambiar de pestaña; puedes consultar tus fuentes privadas mientras planificas tu agenda o redactas un informe.</li>
+                        <li class="pl-2"><strong>Traducción y Estilo:</strong> Pide a Gemini que explique un concepto complejo de tu cuaderno en otro idioma o que lo adapte para una presentación ejecutiva.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 't19',
+                icon: 'fa-solid fa-function',
+                title: 'Domina las fórmulas de Sheets',
+                contentHTML: `
+                    <p>Ahora puedes describir lo que quieres conseguir y dejar que Gemini escriba el código técnico por ti. ✨🤖</p>
+                    <p>Gemini <strong>entiende la estructura de tu hoja</strong>. Si le pides que relacione datos de dos columnas específicas, analizará los encabezados y te dará la fórmula exacta lista para copiar y pegar, ahorrándote horas de pruebas y errores.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Para ello:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2"><strong>Accede a Gemini en tu hoja de cálculo:</strong> Haz clic en el icono de <strong>Gemini</strong> en la esquina superior derecha para abrir el panel lateral.</li>
+                        <li class="pl-2">
+                            <strong>Escribe el prompt dando detalles de la fórmula que necesitas aplicar en tu hoja de cálculo:</strong> En el chat, describe tu necesidad sin tecnicismos. Por ejemplo:
+                            <div class="mt-2 text-orange-200/90 italic">"Necesito una fórmula que sume los valores de la columna C solo si en la columna B dice 'Aprobado' y la fecha de la columna A es de este mes".</div>
+                        </li>
+                        <li class="pl-2">
+                            <strong>Resultado instantáneo:</strong> Gemini te devolverá la fórmula exacta (como <code class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-green-400">=SUMIFS(C:C; B:B; "Aprobado"; ...)</code>).
+                        </li>
+                        <li class="pl-2"><strong>Aplica y listo:</strong> Haz clic en el botón de copiar o simplemente traslada la fórmula a tu celda.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 't20',
+                icon: 'fa-regular fa-calendar-plus',
+                title: 'Creación de eventos con Google Calendar',
+                contentHTML: `
+                    <p>Con Gemini, puedes pasarle una lista completa de citas y pedirle que las agende todas de golpe en tu Google Calendar. No tienes que abrir el calendario, seleccionar el día, poner el título y guardarlo para cada evento.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Abre <a href="https://gemini.google.com" target="_blank" class="text-blue-400 hover:underline">gemini.google.com</a>.</li>
+                        <li class="pl-2">
+                            Escribe un <em>prompt</em> con todas las cosas que quieres agendar. Por ejemplo:
+                            <ul class="list-disc pl-6 mt-3 space-y-3 marker:text-orange-500 text-orange-200/90 italic">
+                                <li class="pl-2">"Agéndame para mañana: reunión con ventas a las 10h, comida con el equipo a las 14h y revisión de informe a las 17h. Ponlo todo en mi calendario principal."</li>
+                                <li class="pl-2">"Tengo estas tres citas para la semana que viene: lunes a las 9h dentista, miércoles a las 12h formación y viernes a las 15h cierre semanal. Créalas todas."</li>
+                            </ul>
+                        </li>
+                        <li class="pl-2 mt-4">Gemini te mostrará un resumen de los eventos que va a crear. Solo tienes que confirmar y aparecerán automáticamente en tu agenda.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 't21',
+                icon: 'fa-brands fa-google',
+                title: 'Modo IA en Google',
+                contentHTML: `
+                    <p>Seguro que estás acostumbrado a buscar algo en Google y tener que entrar en 3 o 4 páginas para encontrar lo que necesitas. Con el Modo IA en el buscador, Google lee esas páginas por ti y te presenta un resumen directo en la parte superior.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Entra en <a href="https://google.es" target="_blank" class="text-blue-400 hover:underline">google.es</a></li>
+                        <li class="pl-2">Escribe tu búsqueda como siempre (ej. <em class="text-orange-200/90">"¿Cómo afecta la nueva normativa de envases a la industria cerámica?"</em>).</li>
+                    </ol>
+
+                    <p class="mt-6 mb-4">Para activar esta función, solo tienes que buscar el botón Modo IA que aparece en dos sitios clave al realizar una búsqueda:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2"><strong>A la derecha:</strong> Encontrarás un botón flotante verde en el lateral derecho de la ventana del navegador.</li>
+                        <li class="pl-2"><strong>Bajo la barra de búsqueda:</strong> Al final de las opciones principales (junto a "Todo"), verás la pestaña resaltada de Modo IA.</li>
+                    </ol>
+
+                    <p class="font-bold text-white mt-8 mb-3 border-t border-[#3E3E3E] pt-6">¿Qué ventajas tiene buscar así?</p>
+                    <ul class="list-disc pl-6 space-y-3 marker:text-blue-500 text-neutral-300">
+                        <li class="pl-2"><strong>Respuestas directas:</strong> Te da la solución sin que tengas que leer 10 artículos diferentes.</li>
+                        <li class="pl-2"><strong>Fuentes verificadas:</strong> A la derecha del resumen, verás exactamente de qué webs ha sacado la información, por si necesitas profundizar.</li>
+                        <li class="pl-2"><strong>Planificación rápida:</strong> Prueba a buscar algo como <em class="text-orange-200/90">"Planifica un viaje de negocios a Castellón de 2 días con hoteles cerca de la estación"</em> y verás cómo te organiza el itinerario ahí mismo.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 't22',
+                icon: 'fa-brands fa-chrome',
+                title: 'Usa la barra de Chrome para preguntar a Gemini',
+                contentHTML: `
+                    <p>No hace falta que busques el icono de Gemini ni que entres en su web oficial. Puedes lanzarle cualquier pregunta o pedirle que analice algo directamente desde la barra de direcciones de tu navegador Chrome.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Haz clic en la barra de direcciones de Chrome (arriba, donde escribes las webs).</li>
+                        <li class="pl-2">Escribe <strong class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-orange-400">@gemini</strong> y pulsa la tecla espacio o el tabulador.</li>
+                        <li class="pl-2">Verás que la barra cambia y pone <em class="text-neutral-400">"Preguntar a Gemini"</em>. Ahora escribe tu pregunta y pulsa Enter.</li>
+                    </ol>
+
+                    <p class="font-bold text-white mt-8 mb-3 border-t border-[#3E3E3E] pt-6">¿Por qué es tan útil este atajo?</p>
+                    <ul class="list-disc pl-6 space-y-3 marker:text-blue-500 text-neutral-300">
+                        <li class="pl-2"><strong>Rapidez total:</strong> Es la forma más veloz de hacer una consulta rápida mientras estás trabajando en otra cosa.</li>
+                        <li class="pl-2"><strong>Sin cambiar de pestaña:</strong> No pierdes el hilo de lo que estás haciendo; Gemini se abre directamente para darte la respuesta.</li>
+                        <li class="pl-2"><strong>Consultas directas:</strong> Puedes usarlo para cálculos rápidos, traducciones de una palabra o para que te dé una idea creativa en medio de un correo.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 't23',
+                icon: 'fa-solid fa-scale-balanced',
+                title: 'Comparativas de mercado en tiempo real',
+                contentHTML: `
+                    <p>En lugar de entrar en diferentes webs y copiar sus precios o servicios a mano, puedes hacer que Gemini navegue por ellas, extraiga la información y te la devuelva en una tabla comparativa lista para pegar en Excel o Sheets.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Abre <a href="https://gemini.google.com" target="_blank" class="text-blue-400 hover:underline">gemini.google.com</a>.</li>
+                        <li class="pl-2">Dale las URLs de las páginas que quieres comparar y sé específico con lo que buscas. Por ejemplo:
+                            <div class="mt-4 p-5 bg-[#1F1F1F] border border-[#3E3E3E] rounded-xl text-orange-200/90 italic">
+                                "Analiza estas tres webs: https://www..., https://www... y https://www... Crea una tabla comparativa que incluya: Precio del servicio básico, tiempo de garantía y si ofrecen soporte 24/7."
+                            </div>
+                        </li>
+                    </ol>
+
+                    <p class="mt-8 pt-4 border-t border-[#3E3E3E]">Gemini entra en el enlace, lee el contenido actualizado y descarta el "relleno" publicitario. Al pedirle una "tabla", puedes copiar el resultado directamente en un Google Sheet o Excel manteniendo el formato.</p>
+                `
+            },
+            {
+                id: 't24',
+                icon: 'fa-solid fa-chart-line',
+                title: 'Tu Sheets financiero',
+                contentHTML: `
+                    <p>Si trabajas con diferentes monedas o sigues la cotización de empresas del sector, puedes usar la función <code class="bg-[#1F1F1F] border border-[#3E3E3E] px-2 py-0.5 rounded text-green-400">=GOOGLEFINANCE</code>. Gemini puede redactar por ti la fórmula exacta para rastrear datos históricos o en tiempo real.</p>
+                    
+                    <p class="font-bold text-white mt-8 mb-4">Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-6 space-y-4 marker:text-neutral-500">
+                        <li class="pl-2">Abre tu Google Sheets.</li>
+                        <li class="pl-2">Para el tipo de cambio actual: En una celda, escribe:
+                            <ul class="list-disc pl-6 mt-2 space-y-2 text-green-400 font-mono text-sm">
+                                <li>=GOOGLEFINANCE("CURRENCY:EURUSD") <br><span class="text-neutral-400 font-sans text-xs">-> Te dará el valor actual del Euro frente al Dólar.</span></li>
+                            </ul>
+                        </li>
+                        <li class="pl-2">Para crear una tabla personalizada: Puedes pedirle a Gemini algo mucho más complejo, como:
+                            <div class="mt-3 p-4 border-l-4 border-orange-500 bg-orange-900/10 text-orange-200/90 italic rounded-r-xl">
+                                "Dame la fórmula de Google Sheets para crear una tabla que muestre el precio de cierre del Euro frente al Dólar de todos los días del mes pasado."
+                            </div>
+                        </li>
+                        <li class="pl-2">Para cotización de acciones: Si quieres seguir a una empresa (ej. Apple), escribe:
+                            <ul class="list-disc pl-6 mt-2 space-y-2 text-green-400 font-mono text-sm">
+                                <li>=GOOGLEFINANCE("NASDAQ:AAPL")</li>
+                            </ul>
+                        </li>
+                    </ol>
+                `
+            }
+        ];
+
         let lessons = [];
         
         // --- CONFIGURACIÓN DE BASE DE DATOS PARA USUARIOS ÚNICOS ---
@@ -328,8 +951,74 @@
 
         // Exponer funciones globales al objeto window para el HTML
         window.router = router;
-        window.filterLessons = renderFullList; // Solución al ReferenceError del buscador
         
+        // --- FUNCIONES DEL MODAL DE TRUCOS (Añadido nuevo) ---
+        window.openTipModal = function(tipId) {
+            const tip = TRUCOS_GEMINI.find(t => t.id === tipId);
+            if (!tip) return;
+            
+            const modalContent = document.getElementById('tip-modal-content');
+            modalContent.innerHTML = `
+                <!-- Header Altadia -->
+                <div class="flex flex-col items-center justify-center mb-10">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-4xl font-extrabold tracking-tight text-white">altadia</h1>
+                        <div class="grid grid-cols-2 gap-1 mb-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-sm"></div>
+                            <div class="w-3 h-3 bg-red-500 rounded-sm"></div>
+                            <div class="w-3 h-3 bg-transparent"></div>
+                            <div class="w-3 h-3 bg-red-500 rounded-sm"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs text-neutral-400 font-medium mt-1">
+                        powered by <i class="fa-solid fa-sparkles text-blue-400"></i> Gemini
+                    </div>
+                </div>
+
+                <!-- Título -->
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-white mb-8">${tip.title}</h2>
+
+                <!-- Contenido dinámico -->
+                <div class="text-neutral-300 space-y-5 leading-relaxed text-lg max-w-3xl mx-auto">
+                    ${tip.contentHTML}
+
+                    <!-- Footer Naranja -->
+                    <div class="bg-orange-900/10 rounded-2xl p-6 mt-8 border border-orange-800/20">
+                        <p class="font-bold text-orange-400 mb-2 italic">
+                            👉 Ahora es tu turno de probar este tip y descubre cuánto tiempo puedes recuperar en tu día.
+                        </p>
+                        <p class="text-orange-300/80 flex items-center gap-2 mt-3">
+                            <i class="fa-regular fa-comment-dots text-lg"></i> 
+                            <span>Cuéntanos <a href="#" class="text-blue-400 underline hover:text-blue-300 font-medium">en los comentarios:</a> ¿Te ha sido útil este truco?</span>
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            const modal = document.getElementById('tip-modal');
+            const panel = document.getElementById('tip-modal-panel');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                panel.classList.remove('scale-95');
+                panel.classList.add('scale-100');
+            }, 10);
+        };
+
+        window.closeTipModal = function() {
+            const modal = document.getElementById('tip-modal');
+            const panel = document.getElementById('tip-modal-panel');
+            
+            modal.classList.add('opacity-0');
+            panel.classList.remove('scale-100');
+            panel.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
         // --- NUEVA FUNCIÓN: Iniciar lección específica con respuesta visual instantánea ---
         window.startLesson = async function(lessonId, iframeLink) {
             // 1. Mostrar el vídeo quitando el placeholder
@@ -419,6 +1108,7 @@
             populateToolSelectors();
             loadData(); 
             setGreeting();
+            renderTips(); // Renderiza los trucos al cargar la página
             router('dashboard');
             
             const searchInput = document.getElementById('search-input');
@@ -615,6 +1305,33 @@
             }
         }
 
+        // --- MODIFICADA: Construir los trucos en miniatura ---
+        function renderTips() {
+            const container = document.getElementById('tips-container');
+            if (!container) return;
+
+            const tipsHTML = TRUCOS_GEMINI.map((tip, index) => `
+                <div class="rounded-2xl lesson-card flex flex-col p-6 cursor-pointer relative overflow-hidden group" onclick="openTipModal('${tip.id}')">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-600/10 to-transparent rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-900/20 text-amber-500 border border-amber-800/30 flex items-center justify-center text-xl shadow-inner group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
+                            <i class="${tip.icon || 'fa-solid fa-lightbulb'}"></i>
+                        </div>
+                    </div>
+                    <div class="relative z-10 flex-1 flex flex-col">
+                        <p class="text-xs font-bold text-amber-500 uppercase tracking-wider mb-2">Truco #${index + 1}</p>
+                        <h3 class="text-xl font-bold text-white leading-snug mb-3">${tip.title}</h3>
+                        
+                        <div class="mt-auto pt-5 flex items-center text-[10px] font-bold text-neutral-400 uppercase tracking-widest group-hover:text-amber-400 transition-colors">
+                            <span>Leer truco completo</span> <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = tipsHTML;
+        }
+
         function renderDashboardList() { document.getElementById('dashboard-list').innerHTML = lessons.slice(0, 4).map(l => createCardHTML(l)).join(''); }
         
         function renderFullList() {
@@ -648,5 +1365,3 @@
     </script>
 </body>
 </html>
-
-
